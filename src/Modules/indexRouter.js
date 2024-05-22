@@ -1,6 +1,7 @@
-const{profileRouter}=require("./Modules/Profiles/profileRouter")
-const { subjectRouter } = require("./Modules/Subject/subjectRouter")
-const { teacherRouter } = require("./Modules/Teachers/teacherRouter")
+const { courseRouter } = require("./Courses/courseRouter")
+const{profileRouter}=require("./Profiles/profileRouter")
+const { subjectRouter } = require("./Subject/subjectRouter")
+const { teacherRouter } = require("./Teachers/teacherRouter")
 
 
 const adminRouter = require('express').Router()
@@ -10,6 +11,7 @@ const userRouter = require('express').Router()
 adminRouter.use("/profile", profileRouter)
 adminRouter.use("/subject", subjectRouter)
 adminRouter.use("/teacher", teacherRouter)
+adminRouter.use("/course", courseRouter);
 
 
 

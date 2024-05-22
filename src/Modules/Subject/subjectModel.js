@@ -7,7 +7,7 @@ const subjectSchema = new mongoose.Schema({
     trim: true,
   },
   iconImage: {
-    type: String, 
+    type: String,
     required: false,
   },
   isActive: {
@@ -22,5 +22,5 @@ const subjectSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-const SUBJECT = mongoose.model("subject", subjectSchema);
+const SUBJECT =new mongoose.model("Subject", subjectSchema);
 module.exports = SUBJECT;

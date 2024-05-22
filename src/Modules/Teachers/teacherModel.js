@@ -12,7 +12,7 @@ const teacherSchema = new mongoose.Schema({
     trim: true,
   },
   profileImage: {
-    type: String, 
+    type: String,
     required: false,
   },
   username: {
@@ -22,7 +22,7 @@ const teacherSchema = new mongoose.Schema({
     trim: true,
   },
   experience: {
-    type: Number, 
+    type: Number,
     required: true,
   },
   email: {
@@ -40,12 +40,12 @@ const teacherSchema = new mongoose.Schema({
     default: false,
   },
   isDelete:{
-    type: Boolean , 
-    default: false 
+    type: Boolean ,
+    default: false
   }
 }, {
   timestamps: true,
 });
 
-const TEACHER = mongoose.model("Teacher", teacherSchema);
+const TEACHER =new  mongoose.model("Teacher", teacherSchema);
 module.exports = TEACHER;

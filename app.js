@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const GlobalErrorHandler = require("./src/Errors/GlobalError");
-const { adminRouter, userRouter } = require("./src/indexRouter");
+const { adminRouter, userRouter } = require("./src/Modules/indexRouter");
 const CustomError = require("./src/Errors/CustomError");
 
 const app = express();
