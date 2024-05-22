@@ -3,24 +3,23 @@ const DbService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
 const CustomError = require("../../Errors/CustomError");
 const { hashPassword, comparePasswords, generateToken } = require('../../Utils/utils');
-const bcrypt = require("bcryptjs")
 const model = new DbService(Profile);
 
 const profileService = {
     create: serviceHandler(async (data) => {
       const { password, ...userData } = data;
       const hashedPassword = await hashPassword(password);
-  
+
       const savedData = await model.save({ ...userData, password: hashedPassword });
-  
+
       return savedData;
     }),
-  
+
     getAll: serviceHandler(async (data) => {
       const query = { isDelete: false };
      const savedData=await model.getAllDocuments(query,data)
      const totalCount=await model.totalCounts({isDelete:false})
-    
+
      return{savedData,totalCount}
     }),
     getById: serviceHandler(async (dataId) => {
@@ -47,12 +46,12 @@ const profileService = {
     signIn:serviceHandler(async(email,password)=>{
       const filter={email}
       const profile = await model.getDocument(filter);
-  
+
       if (!profile) {
         throw new CustomError(404, "Profile not found");
       }
       const isPasswordMatch = await comparePasswords(password, profile.password);
-  
+
       if (!isPasswordMatch) {
         throw new CustomError(401, "Incorrect password");
       }
@@ -62,4 +61,3 @@ const profileService = {
   };
   const ProfileService=profileService
   module.exports = ProfileService;
-  
