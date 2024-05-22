@@ -18,14 +18,6 @@ const assignmentSchema = new mongoose.Schema({
     ref: 'Course',
     required: true
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  },
   isActive: {
     type: Boolean,
     default: false,
@@ -34,6 +26,19 @@ const assignmentSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  assignment: [{
+    name:{
+      type: String,
+      required: true
+    },
+    assignmentURL: {
+      type: String,
+      required: true
+    }
+  }],
+},
+{
+  timestamps: true,
 });
 
 const Assignment = mongoose.model("Assignment", assignmentSchema);
