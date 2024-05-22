@@ -1,3 +1,4 @@
+const { assignmentRouter } = require("./Assignments/assignmentRouter");
 const { courseRouter } = require("./Courses/courseRouter");
 const { profileRouter } = require("./Profiles/profileRouter");
 const { subjectRouter } = require("./Subject/subjectRouter");
@@ -13,6 +14,7 @@ adminRouter.use("/subject", subjectRouter);
 adminRouter.use("/teacher", teacherRouter);
 adminRouter.use("/course", courseRouter);
 adminRouter.use("/video", videoRouter);
+adminRouter.use("/assignment",assignmentRouter );
 
 // USER ROUTES
 
