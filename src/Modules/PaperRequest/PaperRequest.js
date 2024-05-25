@@ -14,6 +14,10 @@ const paperRequestSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    fulfilledBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Student",
+    },
   },
   { timestamps: true }
 );

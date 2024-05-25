@@ -51,5 +51,7 @@ const researchPaperService = {
     );
     return deletedDoc;
   }),
+
+  getByDOInumber: serviceHandler(async (data) => { return data}),
 };
-module.exports={researchPaperService}
+module.exports = { researchPaperService };

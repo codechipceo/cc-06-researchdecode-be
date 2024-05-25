@@ -49,5 +49,16 @@ const researchPaperCtrl = {
       msg: "Document Deleted Successfully",
     });
   }),
+
+  getByDoiNumber: asyncHandler(async (req, res, next) => {
+    const docDTO = req.body;
+    const researchPaper = await researchPaperService.getByDOInumber(docDTO);
+    return successResponse({
+      res,
+      data: researchPaper,
+      msg: "Research Paper fetched",
+      
+    });
+  }),
 };
-module.exports={researchPaperCtrl}
+module.exports = { researchPaperCtrl };
