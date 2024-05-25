@@ -55,7 +55,7 @@ module.exports = class DatabaseService {
     return updatedDocument;
   };
 
-  getDocumentById = async (query,{populateOptions = ''}) => {
+  getDocumentById = async (query,populateOptions = '') => {
     let customQuery = this.model.findOne(query);
 
     if (populateOptions) {

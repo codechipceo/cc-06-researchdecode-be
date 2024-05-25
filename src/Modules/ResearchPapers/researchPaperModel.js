@@ -1,18 +1,41 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const researchPaperSchema = new mongoose.Schema({
-    title: {
+  title: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  DOI_number: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+  },
+  abstract: {
+    type: String,
 
-    },
-    DOI_number: {
+    trim: true,
+  },
+  fileUrl: {
+    type: String,
+    default:"",
 
-    },
-    description: {
+    trim: true,
+  },
+  referenceCount: {
+    type: Number,
 
-    },
-    fileUrl: {
+    min: 0,
+  },
+  publisher: {
+    type: String,
 
-    }
-})
-const RESEARCHPAPER=new mongoose.model("ResearchPaper",researchPaperSchema)
-module.exports=RESEARCHPAPER;
+    trim: true,
+  },
+  type: {
+    type: String,
+  },
+});
+const RESEARCHPAPER = new mongoose.model("ResearchPaper", researchPaperSchema);
+module.exports = RESEARCHPAPER;
