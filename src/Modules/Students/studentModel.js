@@ -5,5 +5,5 @@ const studentSchema=new mongoose.Schema({
 
 
 })
-const STUDENT=new mongoose.model("student",studentSchema)
+const STUDENT=new mongoose.model("Student",studentSchema)
 module.exports=STUDENT;
