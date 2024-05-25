@@ -1,0 +1,53 @@
+const { researchPaperService } = require("./researchPaperService");
+const successResponse = require("../../Utils/apiResponse");
+const asyncHandler = require("../../Utils/asyncHandler");
+
+const researchPaperCtrl = {
+  create: asyncHandler(async (req, res, next) => {
+    const docDTO = req.body;
+    const savedResearchPaper = await researchPaperService.create(docDTO);
+    return successResponse({
+      res,
+      msg: "Created Successfully",
+      data: savedResearchPaper,
+    });
+  }),
+
+  getAll: asyncHandler(async (req, res, next) => {
+    const docDTO = req.body;
+    const { savedData, totalCount } = await researchPaperService.getAll(docDTO);
+    return successResponse({
+      res,
+      data: savedData,
+      count: totalCount,
+      msg: "All Data",
+    });
+  }),
+
+  getById: asyncHandler(async (req, res, next) => {
+    const docDTO = req.body;
+    const docById = await researchPaperService.getById(docDTO);
+    return successResponse({ res, data: docById, msg: "Document By Id" });
+  }),
+
+  update: asyncHandler(async (req, res, next) => {
+    const docDTO = req.body;
+    const updatedDoc = await researchPaperService.update(docDTO);
+    return successResponse({
+      res,
+      data: updatedDoc,
+      msg: "Updated Document successfully",
+    });
+  }),
+
+  delete: asyncHandler(async (req, res, next) => {
+    const docDTO = req.body;
+    const deletedDoc = await CategoryService.delete(docDTO);
+    return successResponse({
+      res,
+      data: deletedDoc,
+      msg: "Document Deleted Successfully",
+    });
+  }),
+};
+module.exports={researchPaperCtrl}
