@@ -11,8 +11,9 @@ const paperRequestSchema = new mongoose.Schema(
       ref: "ResearchPaper",
     },
     requestStatus: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
     },
     fulfilledBy: {
       type: mongoose.Schema.Types.ObjectId,
