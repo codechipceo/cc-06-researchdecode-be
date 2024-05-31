@@ -7,7 +7,7 @@ router.post("/getAll" , profileCtrl.getAll)
 router.post("/getUser" , profileCtrl.getById)
 router.post("/delete" , profileCtrl.delete)
 router.post("/update" , profileCtrl.update)
-router.post("/sigIn" , profileCtrl.signIn)
+router.post("/signIn" , profileCtrl.signIn)
 
 const profileRouter = router
 

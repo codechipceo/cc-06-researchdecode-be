@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 app.use("/admin", adminRouter);
-app.use("/users", userRouter);
+app.use("/user", userRouter);
 
 app.use(GlobalErrorHandler);
 
