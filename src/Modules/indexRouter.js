@@ -2,6 +2,7 @@ const { assignmentRouter } = require("./Assignments/assignmentRouter");
 const { courseRouter } = require("./Courses/courseRouter");
 const { profileRouter } = require("./Profiles/profileRouter");
 const { researchPaperRouter } = require("./ResearchPapers/researchPaperRouter");
+const { studentRouter } = require("./Students/studentRouter");
 const { subjectRouter } = require("./Subject/subjectRouter");
 const { teacherRouter } = require("./Teachers/teacherRouter");
 const { videoRouter } = require("./Videos/videoRouter");
@@ -18,6 +19,7 @@ adminRouter.use("/video", videoRouter);
 adminRouter.use("/researchPaper", researchPaperRouter);
 adminRouter.use("/assignment",assignmentRouter );
 
-// USER ROUTES
 
+// USER ROUTES
+userRouter.use("/student",studentRouter)
 module.exports = { adminRouter, userRouter };
