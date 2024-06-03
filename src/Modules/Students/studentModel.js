@@ -19,12 +19,13 @@ const studentSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
   },
+
   emailVerified: {
     type: Boolean,
     default: false
   },
-  emailVerificationToken: String,
-  emailVerificationTokenExpires: Date,
+  // emailVerificationToken: String,
+  // emailVerificationTokenExpires: Date,
   password: {
     type: String,
     required: true,

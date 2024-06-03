@@ -1,12 +1,11 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+require('dotenv').config();
 
 async function hashPassword(password) {
   try {
     const salt = await bcrypt.genSalt(10);
-
     const hashedPassword = await bcrypt.hash(password, salt);
-
     return hashedPassword;
   } catch (error) {
     throw new Error("Error hashing password");
@@ -16,34 +15,40 @@ async function hashPassword(password) {
 async function comparePasswords(plainPassword, hashedPassword) {
   try {
     const isMatch = await bcrypt.compare(plainPassword, hashedPassword);
-
     return isMatch;
   } catch (error) {
     throw new Error("Error comparing passwords");
   }
 }
+
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "1h" });
 };
+
 const verifyToken = (req, res, next) => {
   try {
-    const token = req.headers.authtoken;
-
-    const decodedUser = jwt.verify(token, process.env.JWT_SECRET);
-
-    req.user = decodedUser;
-
+    console.log("Request body:", req.body); // Log the request body to check if token is sent
+    const token = req.body.token; // Extract the token from the request body
+    console.log("Token:", token); // Log the token
+    if (!token) {
+      return res.status(401).json({ msg: "Authorization header missing" });
+    }
+    const decodedUser = jwt.verify(token, process.env.JWT_SECRET); // Verify the token
+    console.log("Decoded User:", decodedUser); // Log the decoded user
+    req.decodedUser = decodedUser; // Attach decoded user to request object
     next();
   } catch (error) {
-    throw new Error("Invalid token");
+    console.error("Token verification failed:", error); // Log token verification error
+    return res.status(401).json({ msg: "Token verification failed" });
   }
 };
+
+
 
 const checkAccess = (requiredPermissions) => {
   return (req, res, next) => {
     const userPermissions = req.user.userId.permissions;
-    console.log(req.user)
-    
+    console.log(req.user);
     const hasPermission = userPermissions.includes(requiredPermissions);
     if (!hasPermission) {
       return res.status(401).json({ msg: "Access Denied" });
@@ -52,4 +57,4 @@ const checkAccess = (requiredPermissions) => {
   };
 };
 
-module.exports = { hashPassword, comparePasswords, generateToken, verifyToken , checkAccess };
+module.exports = { hashPassword, comparePasswords, generateToken, verifyToken, checkAccess };

@@ -1,73 +1,3 @@
-// const CustomError = require("../../Errors/CustomError");
-// const successResponse = require("../../Utils/apiResponse");
-// const asyncHandler = require("../../Utils/asyncHandler");
-// const studentService = require("./studentService");
-
-// const studentCtrl = {
-//   create: asyncHandler(async (req, res, next) => {
-//     const studentData = req.body;
-
-//     const savedStudent = await studentService.create(studentData);
-
-//     return successResponse({
-//       res: res,
-//       data: savedStudent,
-//       msg: "Student created Successfully",
-//     });
-//   }),
-
-//   getAll: asyncHandler(async (req, res, next) => {
-//     const studentDTO = req.body;
-//     const { savedData, totalCount } = await studentService.getAll(
-//       studentDTO
-//     );
-//     return successResponse({
-//       res,
-//       data: savedData,
-//       count: totalCount,
-//       msg: "All students",
-//     });
-//   }),
-
-//   getById: asyncHandler(async (req, res, next) => {
-//     const studentId = req.body;
-//     const studentById = await studentService.getById(studentId);
-//     return successResponse({ res, data: studentById, msg: "student By Id" });
-//   }),
-
-//   update: asyncHandler(async (req, res, next) => {
-//     const studentDTO = req.body;
-//     const updatedStudent = await studentService.update(studentDTO);
-//     return successResponse({
-//       res,
-//       data: updatedStudent,
-//       msg: "Updated student successfully",
-//     });
-//   }),
-
-//   delete: asyncHandler(async (req, res, next) => {
-//     const studentId = req.body;
-//     const deleteStudent = await CategoryService.delete(studentId);
-//     return successResponse({
-//       res,
-//       data: deletedStudent,
-//       msg: "student Deleted Successfully",
-//     });
-//   }),
-//   signIn: asyncHandler(async (req, res, next) => {
-//     const { email,password } = req.body;
-//     const {user,token} = await studentService.signIn(email,password);
-//     return successResponse({
-//       res,
-//       data: {user,token},
-//       msg: " login successful",
-//     });
-//   }),
-// };
-
-// module.exports = studentCtrl;
-
-
 const CustomError = require("../../Errors/CustomError");
 const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
@@ -132,15 +62,24 @@ console.log(savedStudent);
       msg: "Login successful",
     });
   }),
-  verifyEmail: asyncHandler(async (req, res, next) => {
-    const  token = req.body;
-    try {
-      await StudentService.verifyEmail(token);
-    
-    } catch (error) {
-      return res.status(400).send(error.message);
-    }
-  }),
-};
+
+
+  verifyEmail: async (req, res, next) => {
+   
+      // Save the decoded user from the request
+      const decodedUser = req.decodedUser;
+      console.log("Decoded User in verifyEmail controller:", decodedUser); 
+
+     const user= await StudentService.verifyEmail(decodedUser);
+  
+     
+      return successResponse({
+        res,
+        data: user,
+        msg: "email verified",
+      })
+  }
+}
+
 
 module.exports = studentCtrl;
