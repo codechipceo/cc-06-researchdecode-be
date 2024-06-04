@@ -5,7 +5,7 @@ const router = require('express').Router();
 
 router.post("/create" , subjectCtrl.create)
 router.post("/getAll" ,verifyToken ,  subjectCtrl.getAll)
-router.post("/getCategory" , subjectCtrl.getById)
+router.post("/getById" , subjectCtrl.getById)
 router.post("/delete" , subjectCtrl.delete)
 router.post("/update" , subjectCtrl.update)
 
