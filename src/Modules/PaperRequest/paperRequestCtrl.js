@@ -1,8 +1,8 @@
-import successResponse from "../../Utils/apiResponse";
-import asyncHandler from "../../Utils/asyncHandler";
-import paperRequestService from "./paperRequestService";
+const successResponse = require("../../Utils/apiResponse");
+const asyncHandler = require("../../Utils/asyncHandler");
+const paperRequestService = require("./paperRequestService");
 
-export const paperRequestCtrl = {
+const paperRequestCtrl = {
   create: asyncHandler(async (req, res, next) => {
     const docDTO = req.body;
     const newRequest = await paperRequestService.createRequestResearchPaper(
@@ -32,3 +32,5 @@ export const paperRequestCtrl = {
     });
   }),
 };
+
+module.exports = { paperRequestCtrl };

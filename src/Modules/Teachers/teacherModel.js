@@ -1,51 +1,64 @@
 const mongoose = require("mongoose");
 
-const teacherSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
+const teacherSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    qualification: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    profileImage: {
+      type: String,
+      required: false,
+    },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    aboutTeacher: {
+      type: String,
+      trim: true,
+    },
+    contactNumber: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    experience: {
+      type: Number,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
+    isDelete: {
+      type: Boolean,
+      default: false,
+    },
   },
-  qualification: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  profileImage: {
-    type: String,
-    required: false,
-  },
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
-  experience: {
-    type: Number,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  isActive: {
-    type: Boolean,
-    default: false,
-  },
-  isDelete:{
-    type: Boolean ,
-    default: false
+  {
+    timestamps: true,
   }
-}, {
-  timestamps: true,
-});
+);
 
 const TEACHER =new  mongoose.model("Teacher", teacherSchema);
 module.exports = TEACHER;
