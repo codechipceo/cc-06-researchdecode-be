@@ -25,4 +25,5 @@ adminRouter.use("/assignment", assignmentRouter);
 // USER ROUTES
 userRouter.use("/paperRequest", paperRequestRouter);
 userRouter.use("/student",studentRouter)
+userRouter.use("/course", courseRouter);
 module.exports = { adminRouter, userRouter };
