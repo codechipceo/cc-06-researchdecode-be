@@ -26,6 +26,7 @@ const researchPaperService = {
   getAll: serviceHandler(async (data) => {
     const query = {};
     const savedData = await model.getAllDocuments(query, data);
+    console.log(savedData)
     const totalCount = await model.totalCounts({});
 
     return { savedData, totalCount };

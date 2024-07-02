@@ -14,8 +14,6 @@ const model = new DbService(Student);
 const studentService = {
   create: serviceHandler(async (data) => {
     const { email, password, ...userData } = data;
-    // const email=data.email
-    console.log(password, email);
     // Check if email and password are provided
     if (!email || !password) {
       throw new Error("Email and password are required");
@@ -31,12 +29,9 @@ const studentService = {
 
     // Generate a token for email verification
     const token = generateToken({ userId: savedData.email });
-    console.log("token create:",token);
 
-    console.log("Sending verification email to:", email);
     // Send verification email
-    await sendVerificationEmail(email, token);
-    console.log("Verification email sent successfully to:", email);
+    // await sendVerificationEmail(email, token);
 
     return { msg: "Student created Successfully", data: savedData, token };
   }),
@@ -48,7 +43,12 @@ const studentService = {
 
     return { savedData, totalCount };
   }),
-
+  getBotUsers: serviceHandler(async (data) => {
+    const query = { userType: "BOT" };
+    const savedData = await model.getAllDocuments(query, data);
+    const totalCount = await model.totalCounts({ isDelete: false });
+    return { savedData, totalCount };
+  }),
   getById: serviceHandler(async (dataId) => {
     const { studentId } = dataId;
     const query = { isDelete: false, _id: studentId };
@@ -89,30 +89,27 @@ const studentService = {
     const token = generateToken({ userId: student._id });
     return { token };
   }),
+  getUsersChattedWith: serviceHandler(async (userObj) => {}),
 
   verifyEmail: serviceHandler(async (decodedUser) => {
-  
-
     const { userId } = decodedUser.userId.userId;
 
     // Define the query to find the user
     const query = { _id: userId };
-  
+
     // Find the user in the database by userId
-    const user = await model.getDocumentById({userId});
-  
+    const user = await model.getDocumentById({ userId });
+
     if (!user) {
       throw new Error("User not found");
     }
-  
+
     // Update the emailVerified status
     user.emailVerified = true;
     const savedUser = await user.save();
-    console.log("saveduserr",savedUser);
-  
+    console.log("saveduserr", savedUser);
+
     return savedUser;
-    
-    
   }),
 };
 

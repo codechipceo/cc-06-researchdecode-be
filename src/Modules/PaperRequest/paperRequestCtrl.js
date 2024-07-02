@@ -11,6 +11,13 @@ const paperRequestCtrl = {
 
     successResponse({ res, data: newRequest, msg: "New Request Raised" });
   }),
+  upload: asyncHandler(async (req, res, next) => {
+    const file = req.files;
+    const payload = { file };
+    const newChat = await paperRequestService.uploadRequestPaper(payload);
+
+    return successResponse({ res, msg: "File sent", data: newChat });
+  }),
 
   approve: asyncHandler(async (req, res, next) => {
     const docDTO = req.body;

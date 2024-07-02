@@ -36,6 +36,10 @@ const researchPaperSchema = new mongoose.Schema({
   type: {
     type: String,
   },
+  isDelete: {
+    type: Boolean,
+    default:false
+  }
 });
 const RESEARCHPAPER = new mongoose.model("ResearchPaper", researchPaperSchema);
 module.exports = RESEARCHPAPER;

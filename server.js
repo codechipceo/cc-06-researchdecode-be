@@ -12,8 +12,9 @@ process.on('uncaughtException', (err) => {
 })
 
 
-const URI = process.env.MONGODB;
+// const URI = process.env.MONGODB;
 // mongo connection
+const URI = "mongodb://localhost:27017";
 mongoose
   .connect(URI, {
     useNewUrlParser: true,

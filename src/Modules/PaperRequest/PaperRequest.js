@@ -6,18 +6,25 @@ const paperRequestSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
     },
-    researchPaperId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "ResearchPaper",
+    paperDetail: {
+      type: Object,
+    },
+    fileUrl: {
+      type: String,
+      default: "",
     },
     requestStatus: {
       type: String,
-      enum: ["pending", "approved", "rejected"],
+      enum: ["pending", "approved", "inProgress", "rejected"],
       default: "pending",
     },
     fulfilledBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
+    },
+    isDelete: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
