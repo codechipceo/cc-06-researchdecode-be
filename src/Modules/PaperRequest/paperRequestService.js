@@ -6,7 +6,10 @@ const model = new DatabaseService(PaperRequest);
 const researchPapers = new DatabaseService(ResearchPaperModel);
 const { chatService } = require("../Chats/ChatService");
 const studentService = require("../Students/studentService");
-const { researchPaperService } = require("../ResearchPapers/researchPaperService");
+const {
+  researchPaperService,
+} = require("../ResearchPapers/researchPaperService");
+const CustomError = require("../../Errors/CustomError");
 const paperRequestService = {
   createRequestResearchPaper: serviceHandler(async (data) => {
     const { DOI_number, requestBy, paperDetail } = data;
@@ -40,7 +43,7 @@ const paperRequestService = {
       requestBy,
     });
     if (isResearchPaperRequest && !isResearchPaper) {
-      return;
+      throw new CustomError(400, "Request Already Exists");
     }
     const newResearchPaperRequest = await model.save({
       DOI_number,
@@ -57,7 +60,7 @@ const paperRequestService = {
 
     // await researchPaperService.create()
     const updatedRequest = await model.updateDocument(filter, updatePayload);
-    console.log(updatedRequest)
+    console.log(updatedRequest);
     return updatedRequest;
   }),
 

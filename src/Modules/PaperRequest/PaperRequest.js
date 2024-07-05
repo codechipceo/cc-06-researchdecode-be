@@ -22,6 +22,10 @@ const paperRequestSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
     },
+    DOI_number: {
+      type: String,
+      required: true,
+    },
     isDelete: {
       type: Boolean,
       default: false,
