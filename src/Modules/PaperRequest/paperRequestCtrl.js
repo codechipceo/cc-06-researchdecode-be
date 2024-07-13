@@ -13,7 +13,7 @@ const paperRequestCtrl = {
   }),
   upload: asyncHandler(async (req, res, next) => {
     const file = req.files;
-    const payload = { file };
+    const payload = { file, ...req.body };
     const newChat = await paperRequestService.uploadRequestPaper(payload);
 
     return successResponse({ res, msg: "File sent", data: newChat });
@@ -36,6 +36,24 @@ const paperRequestCtrl = {
       data: allRequests,
       count: totalCounts,
       msg: "All pending requests",
+    });
+  }),
+
+  getPendingRequestById: asyncHandler(async (req, res, next) => {
+    const requestDTO = req.body;
+    const requestData = await paperRequestService.getRequestDetailById(
+      requestDTO
+    );
+    return successResponse({ res, data: requestData, msg: "Request Detail" });
+  }),
+
+  getRequestByUserId: asyncHandler(async (req, res, next) => {
+    const userId = req.body;
+    const requestData = await paperRequestService;
+    return successResponse({
+      res,
+      data: requestData,
+      msg: "Request data by userId",
     });
   }),
 };

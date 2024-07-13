@@ -87,7 +87,9 @@ const studentService = {
     }
 
     const token = generateToken({ userId: student._id });
-    return { token };
+     student.password ="";
+    console.log(student)
+    return { user: student, token };
   }),
   getUsersChattedWith: serviceHandler(async (userObj) => {}),
 

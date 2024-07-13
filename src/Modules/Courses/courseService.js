@@ -10,7 +10,14 @@ const courseService = {
 
   getAll: serviceHandler(async (data) => {
     const query = { isDelete: false };
-    const savedData = await model.getAllDocuments(query, data);
+    const populate = [
+      {
+        path: "instructor",
+      },
+    ];
+    const options = { ...data, populate };
+
+    const savedData = await model.getAllDocuments(query, options);
     const totalCount = await model.totalCounts({ isDelete: false });
     return { savedData, totalCount };
   }),

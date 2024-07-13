@@ -9,7 +9,6 @@ module.exports = class DatabaseService {
   }
 
   saveMany = async (data) => {
-
     const documents = await this.model.insertMany(data);
     return documents;
   };
@@ -18,8 +17,12 @@ module.exports = class DatabaseService {
     return document;
   };
   getAllDocuments = async (query, options = {}) => {
-    const { limit, sort, skip, populate } = options;
-    const updatedQuery = { isDelete: false, ...query };
+    const { limit, sort, skip, populate, isDelete } = options;
+    let updatedQuery;
+    if (options.hasOwnProperty("isDelete")) {
+      updatedQuery = { isDelete: isDelete ? isDelete : false, ...query };
+    }
+    updatedQuery = { ...query };
 
     let customQuery = this.model.find(updatedQuery);
 
@@ -33,6 +36,7 @@ module.exports = class DatabaseService {
       customQuery = customQuery.sort({ createdAt: -1 });
     }
 
+    console.log(populate)
     if (populate) {
       const documents = await customQuery.populate(populate).exec();
       return documents;
@@ -41,25 +45,28 @@ module.exports = class DatabaseService {
     return documents;
   };
 
-
-  updateDocument = async (filter, data, options = { new: true,populate:'' }) => {
+  updateDocument = async (
+    filter,
+    data,
+    options = { new: true, populate: "" }
+  ) => {
     const { populate, ...updateOptions } = options;
 
     let customQuery = this.model.findOneAndUpdate(filter, data, updateOptions);
 
     if (populate) {
-        customQuery = customQuery.populate(populate);
+      customQuery = customQuery.populate(populate);
     }
 
     const updatedDocument = await customQuery.exec();
     return updatedDocument;
   };
 
-  getDocumentById = async (query,populateOptions = '') => {
+  getDocumentById = async (query, populateOptions = "") => {
     let customQuery = this.model.findOne(query);
 
     if (populateOptions) {
-        customQuery = customQuery.populate(populateOptions);
+      customQuery = customQuery.populate(populateOptions);
     }
 
     const document = await customQuery.exec();

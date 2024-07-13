@@ -14,6 +14,20 @@ const chatService = {
     return { savedData, totalCount };
   }),
 
+  getChatOfTwoUsers: serviceHandler(async (data) => {
+    const { senderId, recepientId } = data;
+
+    const query = {
+      $or: [
+        { sender: senderId, recepient: recepientId },
+        { sender: recepientId, recepient: senderId },
+      ],
+    };
+
+    const chats = await model.getAllDocuments(query);
+    return chats;
+  }),
+
   getById: serviceHandler(async (data) => {
     const { chatId } = data;
     const query = { isDelete: false, _id: chatId };

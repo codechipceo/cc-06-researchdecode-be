@@ -9,4 +9,13 @@ paperRequestRouter.post(
   paperRequestCtrl.getAllPendingRequests
 );
 
+paperRequestRouter.post(
+  "/getPendingRequestById",
+  paperRequestCtrl.getPendingRequestById
+);
+paperRequestRouter.post(
+  "/getPendingRequestByUserId",
+  paperRequestCtrl.getRequestByUserId
+);
+
 module.exports = { paperRequestRouter };

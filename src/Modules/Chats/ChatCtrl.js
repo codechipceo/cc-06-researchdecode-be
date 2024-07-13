@@ -36,6 +36,16 @@ const chatCtrl = {
     });
   }),
 
+  getChatsBetweenUsers: asyncHandler(async (req, res, next) => {
+    const chatDTO = req.body;
+    const oldChats = await chatService.getChatOfTwoUsers(chatDTO);
+    return successResponse({
+      res,
+      data: oldChats,
+      msg: "Old Chats Fetched" ,
+    });
+  }),
+
   delete: asyncHandler(async (req, res, next) => {
     const courseId = req.body;
     const deletedDoc = await courseService.delete(courseId);

@@ -55,7 +55,7 @@ const paperRequestService = {
 
   approveRequestResearchPaper: serviceHandler(async (data) => {
     const { DOI_number, fulfilledBy, requestId } = data;
-    const filter = { _id: requestId, DOI_number };
+    const filter = { _id: requestId,  };
     const updatePayload = { requestStatus: "approved", fulfilledBy };
 
     // await researchPaperService.create()
@@ -73,10 +73,11 @@ const paperRequestService = {
   uploadRequestPaper: serviceHandler(async (data) => {
     const { fulfilledBy, requestId, requestBy } = data;
     const filter = { _id: requestId };
+    console.log(fulfilledBy, requestId, requestBy)
     const updatePayload = { requestStatus: "inProgress", fulfilledBy };
     await model.updateDocument(filter, updatePayload);
 
-    const fileUrl = "considerFileUrl.pdf"; // step to upload file
+    const fileUrl = "https://morth.nic.in/sites/default/files/dd12-13_0.pdf"; // step to upload file
 
     const chatPayload = {
       sender: fulfilledBy,
@@ -87,6 +88,20 @@ const paperRequestService = {
 
     return newChat;
   }),
+
+  getRequestDetailById: serviceHandler(async (data) => {
+    const { requestId } = data
+    const populateOptions = [{
+      path:"requestBy"
+
+      
+    }]
+    const requestData = await model.getDocumentById(
+      { _id: requestId },
+      populateOptions
+    );
+    return requestData
+  })
 };
 
 module.exports = paperRequestService;
