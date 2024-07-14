@@ -16,18 +16,7 @@ const videoSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
     },
-    createdBy: {
-      id: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        refPath: "createdBy.model",
-      },
-      model: {
-        type: String,
-        required: true,
-        enum: ["Teacher", "Profile"], // Restrict the values to 'Teacher' and 'Owner'
-      },
-    },
+
     isActive: {
       type: Boolean,
       default: false,

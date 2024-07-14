@@ -5,7 +5,15 @@ const videoService = require("./videoService");
 const videoCtrl = {
   create: asyncHandler(async (req, res, next) => {
     const videoDTO = req.body;
-    const videoSaved = await videoService.create(videoDTO);
+
+    console.log("REQ BODY", videoDTO);
+    console.log("File", req.file);
+    console.log("PAth", req.file.path);
+    const videoFilePath = req?.file?.path;
+    const videoSaved = await videoService.create({
+      ...videoDTO,
+      file: videoFilePath,
+    });
     return successResponse({
       res: res,
       data: videoSaved,

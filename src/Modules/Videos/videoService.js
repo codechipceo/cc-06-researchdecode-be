@@ -1,16 +1,25 @@
+const CustomError = require("../../Errors/CustomError");
 const DbService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
+const uploadFileService = require("../../Utils/uploader");
 const Videos = require("./videosModel");
 const model = new DbService(Videos);
 
 const videoService = {
   create: serviceHandler(async (data) => {
+    const { file } = data;
+    if (!file) throw new CustomError(400, "Please select a file to upload");
+    const result = await uploadFileService.uploadFile(file, "PDF", "video");
+    data.videoUrl = result.secure_url;
     return await model.save(data);
   }),
 
   getAll: serviceHandler(async (data) => {
     const query = { isDelete: false };
-    const savedData = await model.getAllDocuments(query, data);
+    const populate = [{ path: "courseId" }];
+    const modifyData = { ...data, populate };
+
+    const savedData = await model.getAllDocuments(query, modifyData);
     const totalCount = await model.totalCounts({ isDelete: false });
     return { savedData, totalCount };
   }),

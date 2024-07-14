@@ -1,22 +1,25 @@
-class Uploader {
-    constructor(storage) {
-      this.upload = storage;
-    }
-  
-    // Middleware to handle single file upload
-    single(fieldName) {
-      return this.upload.single(fieldName);
-    }
-  
-    // Middleware to handle multiple file uploads
-    array(fieldName, maxCount) {
-      return this.upload.array(fieldName, maxCount);
-    }
-  
-    // Middleware to handle mixed file uploads (array of files for different fields)
-    fields(fields) {
-      return this.upload.fields(fields);
+const cloudinary = require("cloudinary");
+const CustomError = require("../Errors/CustomError");
+
+class UploadFiles {
+  async uploadFile(filePath, folderPath, resourceType, options = {}) {
+    try {
+      const uploadOptions = {
+        folder: folderPath,
+        resource_type: resourceType ?? "raw",
+        ...options,
+      };
+      const result = await cloudinary.v2.uploader.upload(
+        filePath,
+        uploadOptions
+      );
+      return result;
+    } catch (error) {
+      throw new CustomError(500, error.message);
     }
   }
-  
-  module.exports = Uploader;
+}
+
+const uploadFileService = new UploadFiles();
+
+module.exports = uploadFileService;

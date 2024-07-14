@@ -70,7 +70,7 @@ const courseSchema = new mongoose.Schema(
         required: true,
         enum: ["Teacher", "Profile"], // Restrict the values to 'Teacher' and 'Owner'
       },
-    },
+    }, 
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields
