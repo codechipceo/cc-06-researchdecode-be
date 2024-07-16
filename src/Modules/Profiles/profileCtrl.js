@@ -18,9 +18,7 @@ const profileCtrl = {
 
   getAll: asyncHandler(async (req, res, next) => {
     const profileDTO = req.body;
-    const { savedData, totalCount } = await ProfileService.getAll(
-      profileDTO
-    );
+    const { savedData, totalCount } = await ProfileService.getAll(profileDTO);
     return successResponse({
       res,
       data: savedData,
@@ -47,7 +45,7 @@ const profileCtrl = {
 
   delete: asyncHandler(async (req, res, next) => {
     const profileId = req.body;
-    const deletedProfile = await CategoryService.delete(profileId);
+    const deletedProfile = await ProfileService.delete(profileId);
     return successResponse({
       res,
       data: deletedProfile,
@@ -55,11 +53,11 @@ const profileCtrl = {
     });
   }),
   signIn: asyncHandler(async (req, res, next) => {
-    const { email,password } = req.body;
-    const {user,token} = await ProfileService.signIn(email,password);
+    const authDtO = req.body;
+    const { profile, token } = await ProfileService.signIn(authDtO);
     return successResponse({
       res,
-      data: {user,token},
+      data: { profile, token },
       msg: " login successful",
     });
   }),

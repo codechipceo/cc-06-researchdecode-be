@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema(
   {
-    subjectId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Subject",
-      required: true,
-    },
     courseName: {
       type: String,
       required: true,
@@ -38,7 +33,11 @@ const courseSchema = new mongoose.Schema(
     },
     instructor: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Teacher",
+      ref: "Profile",
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Profile",
       required: true,
     },
     enrolledCount: {
@@ -59,18 +58,6 @@ const courseSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    createdBy: {
-      id: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        refPath: "createdBy.model",
-      },
-      model: {
-        type: String,
-        required: true,
-        enum: ["Teacher", "Profile"], // Restrict the values to 'Teacher' and 'Owner'
-      },
-    }, 
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields

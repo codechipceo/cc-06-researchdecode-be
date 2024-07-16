@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-require('dotenv').config();
+require("dotenv").config();
 
 async function hashPassword(password) {
   try {
@@ -25,25 +25,35 @@ const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "1h" });
 };
 
+const generateAdminToken = (adminObj) => {
+  const { _id, role, name, username, email } = adminObj;
+  const payload = {
+    _id,
+    role,
+    name,
+    username,
+    email,
+  };
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "8h" });
+};
+
 const verifyToken = (req, res, next) => {
   try {
-    console.log("Request body:", req.body); // Log the request body to check if token is sent
-    const token = req.body.token; // Extract the token from the request body
-    console.log("Token:", token); // Log the token
+    const token = req.header("authToken"); // Extract the token from header
+
     if (!token) {
       return res.status(401).json({ msg: "Authorization header missing" });
     }
+
     const decodedUser = jwt.verify(token, process.env.JWT_SECRET); // Verify the token
-    console.log("Decoded User:", decodedUser); // Log the decoded user
-    req.decodedUser = decodedUser; // Attach decoded user to request object
+    req.body.createdBy = decodedUser._id;
+    req.body.decodedUser = decodedUser;
+    req.body.userRole = decodedUser.role; // Attach decoded user to request object
     next();
   } catch (error) {
-    console.error("Token verification failed:", error); // Log token verification error
     return res.status(401).json({ msg: "Token verification failed" });
   }
 };
-
-
 
 const checkAccess = (requiredPermissions) => {
   return (req, res, next) => {
@@ -57,4 +67,11 @@ const checkAccess = (requiredPermissions) => {
   };
 };
 
-module.exports = { hashPassword, comparePasswords, generateToken, verifyToken, checkAccess };
+module.exports = {
+  hashPassword,
+  comparePasswords,
+  generateToken,
+  verifyToken,
+  checkAccess,
+  generateAdminToken,
+};

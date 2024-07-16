@@ -1,3 +1,4 @@
+const { verifyToken } = require("../Utils/utils");
 const { assignmentRouter } = require("./Assignments/assignmentRouter");
 const { chatRouter } = require("./Chats/ChatRouter");
 const { courseRouter } = require("./Courses/courseRouter");
@@ -16,8 +17,8 @@ const userRouter = require("express").Router();
 adminRouter.use("/profile", profileRouter);
 adminRouter.use("/subject", subjectRouter);
 adminRouter.use("/teacher", teacherRouter);
-adminRouter.use("/course", courseRouter);
-adminRouter.use("/video", videoRouter);
+adminRouter.use("/course",verifyToken, courseRouter);
+adminRouter.use("/video",verifyToken,  videoRouter);
 adminRouter.use("/researchPaper", researchPaperRouter);
 adminRouter.use("/assignment", assignmentRouter);
 
@@ -26,4 +27,6 @@ userRouter.use("/paperRequest", paperRequestRouter);
 userRouter.use("/student", studentRouter);
 userRouter.use("/course", courseRouter);
 userRouter.use("/chats", chatRouter);
+userRouter.use("/video",  videoRouter);
+
 module.exports = { adminRouter, userRouter };

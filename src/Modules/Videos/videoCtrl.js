@@ -3,6 +3,12 @@ const asyncHandler = require("../../Utils/asyncHandler");
 const videoService = require("./videoService");
 
 const videoCtrl = {
+  getByCourseId: asyncHandler(async (req, res, next) => {
+    const videoDTO = req.body;
+    const videosData = await videoService.getVideosByCourseId(videoDTO);
+
+    return successResponse({ res, data: videosData,  });
+  }),
   create: asyncHandler(async (req, res, next) => {
     const videoDTO = req.body;
 

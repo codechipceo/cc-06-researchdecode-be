@@ -5,6 +5,8 @@ const courseService = require("./courseService");
 const courseCtrl = {
   create: asyncHandler(async (req, res, next) => {
     const courseDto = req.body;
+    courseDto.files = req.files;
+
     const courseSaved = await courseService.create(courseDto);
     return successResponse({
       res: res,

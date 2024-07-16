@@ -1,80 +1,75 @@
 const mongoose = require("mongoose");
 
-const profileSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  qualification: {
-    type: String,
-    required: true,
-  },
-  profileImage: {
-    type: String, // Assuming this will store the URL of the profile image
-    required: false,
-  },
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    minlength: 4,
-    maxlength: 50,
-  },
-  experience: {
-    type: Number, // Number of years of experience
-    required: true,
-  },
-  phoneNumber: {
-    type: String,
-    required: true,
-  },
-  address: {
-    street: {
+const profileSchema = new mongoose.Schema(
+  {
+    name: {
       type: String,
       required: true,
     },
-    city: {
+    qualification: {
+      type: String,
+    },
+    profileImage: {
+      type: String, // Assuming this will store the URL of the profile image
+    },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      minlength: 4,
+      maxlength: 50,
+    },
+    experience: {
+      type: Number, // Number of years of experience
+    },
+    phoneNumber: {
+      type: String,
+      unique: true,
+    },
+    address: {
+      street: {
+        type: String,
+      },
+      city: {
+        type: String,
+      },
+      state: {
+        type: String,
+      },
+      country: {
+        type: String,
+      },
+      postalCode: {
+        type: String,
+      },
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+    password: {
       type: String,
       required: true,
     },
-    state: {
+    role: {
       type: String,
+      enum: ["ADMIN", "TEACHER"],
       required: true,
     },
-    country: {
-      type: String,
-      required: true,
+    isActive: {
+      type: Boolean,
+      default: true,
     },
-    postalCode: {
-      type: String,
-      required: true,
+    isDelete: {
+      type: Boolean,
+      default: false,
     },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    enum: ['admin', 'team'],
-    required: true,
-  },
-  isActive: {
-    type: Boolean,
-    default: false,
-  },
-  isDelete: {
-    type: Boolean,
-    default: false,
-  },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 const PROFILE = mongoose.model("Profile", profileSchema);
 module.exports = PROFILE;
