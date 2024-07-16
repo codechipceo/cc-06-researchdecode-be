@@ -36,7 +36,6 @@ module.exports = class DatabaseService {
       customQuery = customQuery.sort({ createdAt: -1 });
     }
 
-    console.log(populate)
     if (populate) {
       const documents = await customQuery.populate(populate).exec();
       return documents;

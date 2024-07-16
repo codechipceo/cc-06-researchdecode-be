@@ -12,9 +12,7 @@ const videoCtrl = {
   create: asyncHandler(async (req, res, next) => {
     const videoDTO = req.body;
 
-    console.log("REQ BODY", videoDTO);
-    console.log("File", req.file);
-    console.log("PAth", req.file.path);
+  
     const videoFilePath = req?.file?.path;
     const videoSaved = await videoService.create({
       ...videoDTO,

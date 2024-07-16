@@ -8,7 +8,6 @@ const studentCtrl = {
     const studentData = req.body;
 
     const savedStudent = await StudentService.create(studentData);
-console.log(savedStudent);
     return successResponse({
       res: res,
       data: savedStudent,
@@ -65,14 +64,13 @@ console.log(savedStudent);
 
 
   verifyEmail: async (req, res, next) => {
-   
+
       // Save the decoded user from the request
       const decodedUser = req.decodedUser;
-      console.log("Decoded User in verifyEmail controller:", decodedUser); 
 
      const user= await StudentService.verifyEmail(decodedUser);
-  
-     
+
+
       return successResponse({
         res,
         data: user,

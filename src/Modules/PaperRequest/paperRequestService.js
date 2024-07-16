@@ -26,7 +26,6 @@ const paperRequestService = {
       );
       const botUser = botUsersArr.savedData[randomIndex];
 
-      console.log(botUsersArr);
 
       const chatPayload = {
         sender: botUser._id,
@@ -60,7 +59,6 @@ const paperRequestService = {
 
     // await researchPaperService.create()
     const updatedRequest = await model.updateDocument(filter, updatePayload);
-    console.log(updatedRequest);
     return updatedRequest;
   }),
 
@@ -73,7 +71,6 @@ const paperRequestService = {
   uploadRequestPaper: serviceHandler(async (data) => {
     const { fulfilledBy, requestId, requestBy } = data;
     const filter = { _id: requestId };
-    console.log(fulfilledBy, requestId, requestBy)
     const updatePayload = { requestStatus: "inProgress", fulfilledBy };
     await model.updateDocument(filter, updatePayload);
 
@@ -94,7 +91,7 @@ const paperRequestService = {
     const populateOptions = [{
       path:"requestBy"
 
-      
+
     }]
     const requestData = await model.getDocumentById(
       { _id: requestId },

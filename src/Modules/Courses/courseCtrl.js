@@ -35,7 +35,6 @@ const courseCtrl = {
   update: asyncHandler(async (req, res, next) => {
     const courseDto = req.body;
     const updatedCourse = await courseService.update(courseDto);
-    console.log(updatedCourse);
     return successResponse({
       res,
       data: updatedCourse,

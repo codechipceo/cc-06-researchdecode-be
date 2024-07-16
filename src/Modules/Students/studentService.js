@@ -88,7 +88,6 @@ const studentService = {
 
     const token = generateToken({ userId: student._id });
      student.password ="";
-    console.log(student)
     return { user: student, token };
   }),
   getUsersChattedWith: serviceHandler(async (userObj) => {}),
@@ -109,7 +108,6 @@ const studentService = {
     // Update the emailVerified status
     user.emailVerified = true;
     const savedUser = await user.save();
-    console.log("saveduserr", savedUser);
 
     return savedUser;
   }),
