@@ -12,11 +12,14 @@ const paperRequestCtrl = {
     successResponse({ res, data: newRequest, msg: "New Request Raised" });
   }),
   upload: asyncHandler(async (req, res, next) => {
-    const file = req.files;
-    const payload = { file, ...req.body };
-    const newChat = await paperRequestService.uploadRequestPaper(payload);
+    console.log(req.body, "IN CTRL");
+    console.log(req.file);
+    const payload = { file:req.file, ...req.body };
+    const updatedRequest = await paperRequestService.uploadRequestPaper(
+      payload
+    );
 
-    return successResponse({ res, msg: "File sent", data: newChat });
+    return successResponse({ res, msg: "File sent", data: updatedRequest });
   }),
 
   approve: asyncHandler(async (req, res, next) => {

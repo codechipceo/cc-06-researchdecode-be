@@ -41,7 +41,7 @@ const studentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    defaultPoints: {
+    points: {
       type: Number,
       default: 100,
     },

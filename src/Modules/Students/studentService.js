@@ -28,7 +28,7 @@ const studentService = {
     });
 
     // Generate a token for email verification
-    const token = generateToken({ userId: savedData.email });
+    const token = generateToken({ ...savedData, password: "" });
 
     // Send verification email
     // await sendVerificationEmail(email, token);
@@ -86,8 +86,8 @@ const studentService = {
       throw new CustomError(401, "Incorrect password");
     }
 
-    const token = generateToken({ userId: student._id });
-     student.password ="";
+    const token = generateToken(student);
+    student.password = "";
     return { user: student, token };
   }),
   getUsersChattedWith: serviceHandler(async (userObj) => {}),

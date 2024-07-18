@@ -22,7 +22,13 @@ async function comparePasswords(plainPassword, hashedPassword) {
 }
 
 const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  const { _id, firstName, userType } = userId;
+  const payload = {
+    _id,
+    firstName,
+    userType,
+  };
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "8h" });
 };
 
 const generateAdminToken = (adminObj) => {

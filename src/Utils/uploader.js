@@ -15,7 +15,8 @@ class UploadFiles {
       );
       return result;
     } catch (error) {
-      throw new CustomError(500, error.message);
+      console.log(error)
+      throw new CustomError(500, error);
     }
   }
 }

@@ -1,15 +1,25 @@
+// models
 const DatabaseService = require("../../Service/DbService");
-const serviceHandler = require("../../Utils/serviceHandler");
 const PaperRequest = require("./PaperRequest");
 const ResearchPaperModel = require("../ResearchPapers/researchPaperModel");
+const Student = require("../Students/studentModel");
+
+// initialisation of models
 const model = new DatabaseService(PaperRequest);
 const researchPapers = new DatabaseService(ResearchPaperModel);
+const studentModel = new DatabaseService(Student);
+
+// service and error layers import
+const serviceHandler = require("../../Utils/serviceHandler");
 const { chatService } = require("../Chats/ChatService");
 const studentService = require("../Students/studentService");
 const {
   researchPaperService,
 } = require("../ResearchPapers/researchPaperService");
 const CustomError = require("../../Errors/CustomError");
+const uploadFileService = require("../../Utils/uploader");
+
+// service layer
 const paperRequestService = {
   createRequestResearchPaper: serviceHandler(async (data) => {
     const { DOI_number, requestBy, paperDetail } = data;
@@ -25,7 +35,6 @@ const paperRequestService = {
         Math.random() * botUsersArr.savedData.length
       );
       const botUser = botUsersArr.savedData[randomIndex];
-
 
       const chatPayload = {
         sender: botUser._id,
@@ -53,52 +62,67 @@ const paperRequestService = {
   }),
 
   approveRequestResearchPaper: serviceHandler(async (data) => {
-    const { DOI_number, fulfilledBy, requestId } = data;
-    const filter = { _id: requestId,  };
-    const updatePayload = { requestStatus: "approved", fulfilledBy };
+    const { requestId, createdBy } = data;
+    const isStudent = await studentModel.getDocumentById({ _id: createdBy });
+    if (!isStudent) throw new CustomError(400, "Student doesn't exist");
+    const studentPoints = isStudent?.defaultPoints;
 
-    // await researchPaperService.create()
+    if (studentPoints <= 0)
+      throw new CustomError(400, "Not Enough Points Available");
+
+    const filter = { _id: requestId };
+    const updatePayload = { requestStatus: "approved" };
+
     const updatedRequest = await model.updateDocument(filter, updatePayload);
+    if (updatedRequest.requestStatus === "approved") {
+      const filter = { _id: createdBy };
+      const payload = { points: studentPoints - 10 };
+      await studentModel.updateDocument(filter, payload);
+    }
+
     return updatedRequest;
   }),
 
   getAllRequestResearchPapers: serviceHandler(async (data) => {
-    const query = { requestStatus: "pending" };
+    const query = { requestStatus: data.requestStatus ?? "pending" };
+    data.populate = [{ path: "requestBy" }];
     const allRequests = await model.getAllDocuments(query, data);
     const totalCounts = await model.totalCounts(query);
     return { allRequests, totalCounts };
   }),
   uploadRequestPaper: serviceHandler(async (data) => {
-    const { fulfilledBy, requestId, requestBy } = data;
+    const { requestId, requestBy, file, createdBy } = data;
+    const uploadedPaper = await uploadFileService.uploadFile(
+      file?.path,
+      "PDF",
+      "raw"
+    );
+
+    console.log(data);
     const filter = { _id: requestId };
-    const updatePayload = { requestStatus: "inProgress", fulfilledBy };
-    await model.updateDocument(filter, updatePayload);
+    const updatePayload = {
+      requestStatus: "inProgress",
 
-    const fileUrl = "https://morth.nic.in/sites/default/files/dd12-13_0.pdf"; // step to upload file
-
-    const chatPayload = {
-      sender: fulfilledBy,
-      recepient: requestBy,
-      content: fileUrl,
+      fulfilledBy: createdBy,
+      fileUrl: uploadedPaper.secure_url,
     };
-    const newChat = await chatService.createChats(chatPayload);
 
-    return newChat;
+    return await model.updateDocument(filter, updatePayload);
   }),
 
   getRequestDetailById: serviceHandler(async (data) => {
-    const { requestId } = data
-    const populateOptions = [{
-      path:"requestBy"
-
-
-    }]
+    const { requestId } = data;
+    const populateOptions = [
+      {
+        path: "requestBy",
+      },
+    ];
     const requestData = await model.getDocumentById(
       { _id: requestId },
       populateOptions
     );
-    return requestData
-  })
+    return requestData;
+  }),
 };
 
 module.exports = paperRequestService;
