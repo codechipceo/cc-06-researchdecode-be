@@ -7,8 +7,16 @@ const paperRequestRouter = require("express").Router();
 const upload = multer({ dest: "uploads/" });
 
 paperRequestRouter.post("/createRequest", paperRequestCtrl.create);
-paperRequestRouter.post("/approveRequest", paperRequestCtrl.approve);
-
+paperRequestRouter.post(
+  "/approveRequest",
+  verifyToken,
+  paperRequestCtrl.approve
+);
+paperRequestRouter.post(
+  "/rejectRequest",
+  verifyToken,
+  paperRequestCtrl.rejectRequest
+);
 
 paperRequestRouter.post(
   "/uploadRequestPaper",

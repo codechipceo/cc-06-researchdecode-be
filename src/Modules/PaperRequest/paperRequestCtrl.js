@@ -14,7 +14,7 @@ const paperRequestCtrl = {
   upload: asyncHandler(async (req, res, next) => {
     console.log(req.body, "IN CTRL");
     console.log(req.file);
-    const payload = { file:req.file, ...req.body };
+    const payload = { file: req.file, ...req.body };
     const updatedRequest = await paperRequestService.uploadRequestPaper(
       payload
     );
@@ -57,6 +57,16 @@ const paperRequestCtrl = {
       res,
       data: requestData,
       msg: "Request data by userId",
+    });
+  }),
+
+  rejectRequest: asyncHandler(async (req, res, next) => {
+    const reqDto = req.body;
+    const doc = await paperRequestService.rejectRequest(reqDto);
+    return successResponse({
+      res,
+      data: doc,
+      msg: "Request Rejected Successfully",
     });
   }),
 };

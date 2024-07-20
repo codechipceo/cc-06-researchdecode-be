@@ -63,17 +63,23 @@ const paperRequestService = {
 
   approveRequestResearchPaper: serviceHandler(async (data) => {
     const { requestId, createdBy } = data;
+    console.log(createdBy);
     const isStudent = await studentModel.getDocumentById({ _id: createdBy });
     if (!isStudent) throw new CustomError(400, "Student doesn't exist");
-    const studentPoints = isStudent?.defaultPoints;
+    const studentPoints = isStudent?.points;
 
     if (studentPoints <= 0)
       throw new CustomError(400, "Not Enough Points Available");
 
     const filter = { _id: requestId };
     const updatePayload = { requestStatus: "approved" };
+    const options = { new: true, populate };
 
-    const updatedRequest = await model.updateDocument(filter, updatePayload);
+    const updatedRequest = await model.updateDocument(
+      filter,
+      updatePayload,
+      options
+    );
     if (updatedRequest.requestStatus === "approved") {
       const filter = { _id: createdBy };
       const payload = { points: studentPoints - 10 };
@@ -122,6 +128,21 @@ const paperRequestService = {
       populateOptions
     );
     return requestData;
+  }),
+
+  rejectRequest: serviceHandler(async (data) => {
+    const { requestId } = data;
+    const filter = { _id: requestId };
+    const payload = { requestStatus: "pending" };
+    const populate = [{ path: "requestBy" }];
+    const options = { new: true, populate };
+    const rejectedRequest = await model.updateDocument(
+      filter,
+      payload,
+      options
+    );
+
+    return rejectedRequest;
   }),
 };
 
