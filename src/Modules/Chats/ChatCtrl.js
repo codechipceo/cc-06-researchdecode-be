@@ -10,7 +10,7 @@ const chatCtrl = {
   }),
   getAll: asyncHandler(async (req, res, next) => {
     const courseDto = req.body;
-    const { savedData, totalCount } = await courseService.getAll(courseDto);
+    const { savedData, totalCount } = await chatService.getAll(courseDto);
     return successResponse({
       res,
       data: savedData,
@@ -41,7 +41,7 @@ const chatCtrl = {
     return successResponse({
       res,
       data: oldChats,
-      msg: "Old Chats Fetched" ,
+      msg: "Old Chats Fetched",
     });
   }),
 

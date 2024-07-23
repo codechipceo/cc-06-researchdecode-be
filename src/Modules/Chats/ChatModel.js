@@ -4,14 +4,27 @@ const chatSchema = new mongoose.Schema(
   {
     sender: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
+      required: true,
+      refPath: "senderModel",
     },
-    recepient: {
+    senderModel: {
+      type: String,
+      required: true,
+      enum: ["Student", "Profile"],
+    },
+    recipient: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
+      required: true,
+      refPath: "recipientModel",
+    },
+    recipientModel: {
+      type: String,
+      required: true,
+      enum: ["Student", "Profile"],
     },
     content: {
       type: String,
+      required: true,
     },
   },
   {
@@ -19,5 +32,5 @@ const chatSchema = new mongoose.Schema(
   }
 );
 
-const Chats = new mongoose.model("Chat", chatSchema);
-module.exports = Chats;
+const Chat = mongoose.model("Chat", chatSchema);
+module.exports = Chat;

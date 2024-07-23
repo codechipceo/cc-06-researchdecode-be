@@ -63,7 +63,6 @@ const paperRequestService = {
 
   approveRequestResearchPaper: serviceHandler(async (data) => {
     const { requestId, createdBy } = data;
-    console.log(createdBy);
     const isStudent = await studentModel.getDocumentById({ _id: createdBy });
     if (!isStudent) throw new CustomError(400, "Student doesn't exist");
     const studentPoints = isStudent?.points;
@@ -104,7 +103,6 @@ const paperRequestService = {
       "raw"
     );
 
-    console.log(data);
     const filter = { _id: requestId };
     const updatePayload = {
       requestStatus: "inProgress",

@@ -1,6 +1,8 @@
 const { verifyToken } = require("../Utils/utils");
 const { assignmentRouter } = require("./Assignments/assignmentRouter");
 const { chatRouter } = require("./Chats/ChatRouter");
+const consultancyRouter = require("./Consultancy/consultancyRouter");
+const consultancyCardRouter = require("./ConsultancyCard/consultancyCardRouter");
 const { courseRouter } = require("./Courses/courseRouter");
 const { paperRequestRouter } = require("./PaperRequest/paperRequestRouter");
 const { profileRouter } = require("./Profiles/profileRouter");
@@ -17,16 +19,21 @@ const userRouter = require("express").Router();
 adminRouter.use("/profile", profileRouter);
 adminRouter.use("/subject", subjectRouter);
 adminRouter.use("/teacher", teacherRouter);
-adminRouter.use("/course",verifyToken, courseRouter);
-adminRouter.use("/video",verifyToken,  videoRouter);
+adminRouter.use("/course", verifyToken, courseRouter);
+adminRouter.use("/video", verifyToken, videoRouter);
 adminRouter.use("/researchPaper", researchPaperRouter);
 adminRouter.use("/assignment", assignmentRouter);
+adminRouter.use("/consultancyCard", consultancyCardRouter);
+adminRouter.use("/consultancy", consultancyRouter);
 
 // USER ROUTES
 userRouter.use("/paperRequest", paperRequestRouter);
 userRouter.use("/student", studentRouter);
 userRouter.use("/course", courseRouter);
 userRouter.use("/chats", chatRouter);
-userRouter.use("/video",  videoRouter);
+userRouter.use("/video", videoRouter);
+userRouter.use("/teacher", teacherRouter);
+userRouter.use("/consultancyCard", consultancyCardRouter);
+userRouter.use("/consultancy", consultancyRouter);
 
 module.exports = { adminRouter, userRouter };

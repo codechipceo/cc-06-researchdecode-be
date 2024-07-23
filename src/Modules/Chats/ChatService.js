@@ -8,7 +8,8 @@ const chatService = {
     return await model.save(data);
   }),
   getAll: serviceHandler(async (data) => {
-    const query = { isDelete: false };
+    const query = {};
+    data.populate = [{ path: "sender" }, { path: "recipient" }];
     const savedData = await model.getAllDocuments(query, data);
     const totalCount = await model.totalCounts({ isDelete: false });
     return { savedData, totalCount };

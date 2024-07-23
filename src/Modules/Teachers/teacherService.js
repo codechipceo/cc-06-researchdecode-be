@@ -1,8 +1,12 @@
-const Teacher = require("./teacherModel");
+const Teacher = require("../Profiles/profileModel");
 const DbService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
 const CustomError = require("../../Errors/CustomError");
-const { hashPassword, comparePasswords, generateToken } = require('../../Utils/utils');
+const {
+  hashPassword,
+  comparePasswords,
+  generateToken,
+} = require("../../Utils/utils");
 const bcrypt = require("bcryptjs");
 
 const model = new DbService(Teacher);
@@ -12,21 +16,24 @@ const teacherService = {
     const { password, ...teacherData } = data;
     const hashedPassword = await hashPassword(password);
 
-    const savedData = await model.save({ ...teacherData, password: hashedPassword });
+    const savedData = await model.save({
+      ...teacherData,
+      password: hashedPassword,
+    });
 
     return savedData;
   }),
 
   getAll: serviceHandler(async (data) => {
-    const query = { isDelete: false };
-   const savedData=await model.getAllDocuments(query,data)
-   const totalCount=await model.totalCounts({isDelete:false})
-  
-   return{savedData,totalCount}
+    const query = { isDelete: false, role: "TEACHER" };
+    const savedData = await model.getAllDocuments(query, data);
+    const totalCount = await model.totalCounts({ isDelete: false, role:"TEACHER" });
+
+    return { savedData, totalCount };
   }),
   getById: serviceHandler(async (dataId) => {
-    const { teacherId } = dataId;
-    const query = { isDelete: false, _id: teacherId };
+    const { supervisorId } = dataId;
+    const query = { isDelete: false, _id: supervisorId };
     const savedDataById = await model.getDocumentById(query);
     return savedDataById;
   }),
@@ -45,8 +52,8 @@ const teacherService = {
     );
     return deletedDoc;
   }),
-  signIn:serviceHandler(async(email,password)=>{
-    const filter={email}
+  signIn: serviceHandler(async (email, password) => {
+    const filter = { email };
     const customer = await model.getDocument(filter);
 
     if (!customer) {
@@ -57,9 +64,9 @@ const teacherService = {
     if (!isPasswordMatch) {
       throw new CustomError(401, "Incorrect password");
     }
-const token=generateToken(customer)
-    return {token}
-  }  )
+    const token = generateToken(customer);
+    return { token };
+  }),
 };
-const TeacherService=teacherService
+const TeacherService = teacherService;
 module.exports = TeacherService;

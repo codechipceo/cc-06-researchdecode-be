@@ -12,8 +12,7 @@ const paperRequestCtrl = {
     successResponse({ res, data: newRequest, msg: "New Request Raised" });
   }),
   upload: asyncHandler(async (req, res, next) => {
-    console.log(req.body, "IN CTRL");
-    console.log(req.file);
+  
     const payload = { file: req.file, ...req.body };
     const updatedRequest = await paperRequestService.uploadRequestPaper(
       payload
