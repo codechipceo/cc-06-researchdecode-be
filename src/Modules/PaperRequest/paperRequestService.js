@@ -62,7 +62,7 @@ const paperRequestService = {
   }),
 
   approveRequestResearchPaper: serviceHandler(async (data) => {
-    const { requestId, createdBy } = data;
+    const { requestId, createdBy, fulfilledBy } = data;
     const isStudent = await studentModel.getDocumentById({ _id: createdBy });
     if (!isStudent) throw new CustomError(400, "Student doesn't exist");
     const studentPoints = isStudent?.points;
@@ -80,10 +80,16 @@ const paperRequestService = {
       updatePayload,
       options
     );
+    const promises=[]
     if (updatedRequest.requestStatus === "approved") {
       const filter = { _id: createdBy };
-      const payload = { points: studentPoints - 10 };
-      await studentModel.updateDocument(filter, payload);
+      const payload = { $inc: { points: -10 } };
+      promises.push(studentModel.updateDocument(filter, payload));
+
+      const approvedByfilter = { _id: fulfilledBy };
+      const approvalPayload = { $inc: { points: -10 } };
+      promises.push(studentModel.updateDocument(approvedByfilter, approvalPayload));
+      await Promise.all(promises)
     }
 
     return updatedRequest;
@@ -111,11 +117,11 @@ const paperRequestService = {
       fulfilledBy: createdBy,
       fileUrl: uploadedPaper.secure_url,
     };
-    const populate = [{ path: 'requestBy' }]
+    const populate = [{ path: "requestBy" }];
 
-    const option  =  {new:true, populate}
+    const option = { new: true, populate };
 
-    return await model.updateDocument(filter, updatePayload,  option);
+    return await model.updateDocument(filter, updatePayload, option);
   }),
 
   getRequestDetailById: serviceHandler(async (data) => {
@@ -135,7 +141,7 @@ const paperRequestService = {
   rejectRequest: serviceHandler(async (data) => {
     const { requestId } = data;
     const filter = { _id: requestId };
-    const payload = { requestStatus: "pending" , fileUrl:''};
+    const payload = { requestStatus: "pending", fileUrl: "" };
     const populate = [{ path: "requestBy" }];
     const options = { new: true, populate };
     const rejectedRequest = await model.updateDocument(
