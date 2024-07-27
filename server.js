@@ -1,6 +1,8 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const app = require("./app");
+const rtcServer = require("./src/webRTC/webRtc");
+
 
 // Shut down server if Uncaught Exception occurs
 
@@ -29,6 +31,10 @@ const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
   console.log("Server is running on port", PORT);
 });
+
+rtcServer.listen(5001, () => {
+  console.log("RTC sertver running")
+})
 
 // Shut down server if unhandled rejection occurs
 process.on("unhandledRejection", (err) => {

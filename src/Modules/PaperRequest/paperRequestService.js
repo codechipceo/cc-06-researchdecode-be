@@ -72,6 +72,7 @@ const paperRequestService = {
 
     const filter = { _id: requestId };
     const updatePayload = { requestStatus: "approved" };
+    const populate = [{ path: "requestBy" }];
     const options = { new: true, populate };
 
     const updatedRequest = await model.updateDocument(
@@ -110,8 +111,11 @@ const paperRequestService = {
       fulfilledBy: createdBy,
       fileUrl: uploadedPaper.secure_url,
     };
+    const populate = [{ path: 'requestBy' }]
 
-    return await model.updateDocument(filter, updatePayload);
+    const option  =  {new:true, populate}
+
+    return await model.updateDocument(filter, updatePayload,  option);
   }),
 
   getRequestDetailById: serviceHandler(async (data) => {
@@ -131,7 +135,7 @@ const paperRequestService = {
   rejectRequest: serviceHandler(async (data) => {
     const { requestId } = data;
     const filter = { _id: requestId };
-    const payload = { requestStatus: "pending" };
+    const payload = { requestStatus: "pending" , fileUrl:''};
     const populate = [{ path: "requestBy" }];
     const options = { new: true, populate };
     const rejectedRequest = await model.updateDocument(

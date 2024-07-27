@@ -87,13 +87,16 @@ const consultancyService = {
     if (digest !== razorpay_signature) {
       throw new CustomError(400, "Payment Not Verified");
     } else {
-      const getConsultancy =model.getDocumentById({ _id: consultancyId });
+      const getConsultancy = await model.getDocumentById({
+        _id: consultancyId,
+      });
+
       const filter = { _id: consultancyId };
       const updateDocument = {
         isScheduled: true,
         paymentStatus: "paid",
       };
-      model.updateDocument(filter, updateDocument, {
+      await model.updateDocument(filter, updateDocument, {
         new: true,
         populate: [
           { path: "studentId" },
@@ -101,6 +104,16 @@ const consultancyService = {
           { path: "cardId" },
         ],
       });
+      const updatePayment = {
+        paymentStatus: "Completed",
+        transactionId: razorpay_payment_id,
+      };
+      await paymentService.updatePayment(
+        {
+          paymentId: getConsultancy?.paymentId,
+        },
+        updatePayment
+      );
     }
   }),
 };
