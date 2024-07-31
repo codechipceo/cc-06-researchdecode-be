@@ -1,6 +1,6 @@
 const DatabaseService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
-const ConsultancyCard = require("./ConsultancyCardModel");
+const ConsultancyCard = require("./consultancyCardModel");
 
 const model = new DatabaseService(ConsultancyCard);
 
