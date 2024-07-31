@@ -3,6 +3,7 @@ const { assignmentRouter } = require("./Assignments/assignmentRouter");
 const { chatRouter } = require("./Chats/ChatRouter");
 const consultancyRouter = require("./Consultancy/consultancyRouter");
 const consultancyCardRouter = require("./ConsultancyCard/consultancyCardRouter");
+const courseEnrollmentRouter = require("./CourseEnrollment/courseEnrollmentRouter");
 const { courseRouter } = require("./Courses/courseRouter");
 const { paperRequestRouter } = require("./PaperRequest/paperRequestRouter");
 const { profileRouter } = require("./Profiles/profileRouter");
@@ -35,5 +36,6 @@ userRouter.use("/video", videoRouter);
 userRouter.use("/teacher", teacherRouter);
 userRouter.use("/consultancyCard", consultancyCardRouter);
 userRouter.use("/consultancy", consultancyRouter);
+userRouter.use("/courseEnrollment", verifyToken, courseEnrollmentRouter);
 
 module.exports = { adminRouter, userRouter };

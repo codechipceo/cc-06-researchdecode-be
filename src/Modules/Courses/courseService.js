@@ -1,8 +1,11 @@
+const { default: mongoose } = require("mongoose");
 const DbService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
 const uploadFileService = require("../../Utils/uploader");
+const courseEnrollmentService = require("../CourseEnrollment/courseEnrollmentService");
 const Course = require("./coursesModel");
 const model = new DbService(Course);
+const { ObjectId } = mongoose.Types;
 
 const courseService = {
   create: serviceHandler(async (data) => {
@@ -45,11 +48,92 @@ const courseService = {
     return { savedData, totalCount };
   }),
   getById: serviceHandler(async (dataId) => {
-    const { courseId } = dataId;
-    const query = { isDelete: false, _id: courseId };
-    const populateOptions = [{ path: "instructor" }];
-    const savedDataById = await model.getDocumentById(query, populateOptions);
-    return savedDataById;
+    const { courseId, decodedUser } = dataId;
+
+    console.log(decodedUser)
+
+    const aggregatePipeline = [
+      { $match: { _id: new ObjectId(courseId) , isDelete: false} },
+      {
+        $lookup: {
+          from: "courseenrollments",
+          let: { courseId: "$_id", studentId: new ObjectId(decodedUser._id) },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$courseId", "$$courseId"] },
+                    { $eq: ["$studentId", "$$studentId"] },
+                    { $eq: ["$isEnrolled", true] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "isStudentEnrolled",
+        },
+      },
+      {
+        $addFields: {
+          isStudentEnrolled: {
+            $cond: {
+              if: { $gt: [{ $size: "$isStudentEnrolled" }, 0] },
+              then: true,
+              else: false,
+            },
+          },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "CourseEnrollment",
+          let: { courseId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$courseId", "$$courseId"] },
+              },
+            },
+            {
+              $count: "enrollmentCount",
+            },
+          ],
+          as: "enrollmentCount",
+        },
+      },
+      {
+        $lookup: {
+          from: "profiles",
+          localField: "instructor",
+          foreignField: "_id",
+          as: "instructor",
+        },
+      },
+      {
+        $addFields: {
+          instructor: { $arrayElemAt: ["$instructor", 0] },
+        },
+      },
+      {
+        $lookup: {
+          from: "videos",
+          localField: "_id",
+          foreignField: "courseId",
+          as: "videos",
+          pipeline: [
+            {
+              $project: {
+                videoTitle: 1,
+              },
+            },
+          ],
+        },
+      },
+    ];
+    const data = await model.aggregatePipeline(aggregatePipeline);
+    return data[0];
   }),
   update: serviceHandler(async (updateData) => {
     const { courseId } = updateData;

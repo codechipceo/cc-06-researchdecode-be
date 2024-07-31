@@ -13,7 +13,7 @@ const paymentService = {
   }),
 
   updatePayment: serviceHandler(async (data) => {
-    
+
     const { paymentId } = data;
     const filter = { _id: paymentId };
     const updateDoc = { ...data };

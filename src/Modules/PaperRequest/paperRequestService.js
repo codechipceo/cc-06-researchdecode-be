@@ -97,6 +97,9 @@ const paperRequestService = {
 
   getAllRequestResearchPapers: serviceHandler(async (data) => {
     const query = { requestStatus: data.requestStatus ?? "pending" };
+    if (data.userId) {
+      query.requestBy = data.userId
+    }
     data.populate = [{ path: "requestBy" }];
     const allRequests = await model.getAllDocuments(query, data);
     const totalCounts = await model.totalCounts(query);

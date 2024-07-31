@@ -19,8 +19,10 @@ const paymentSchema = new Schema(
     },
     paymentMethod: {
       type: String,
-      required: true,
-
+    },
+    transactionType: {
+      type: String,
+      enum: ["courseEnroll", "hireTeacher", "other"],
     },
     paymentStatus: {
       type: String,
@@ -34,7 +36,6 @@ const paymentSchema = new Schema(
     },
     transactionId: {
       type: String,
-      unique: true,
     },
   },
   {

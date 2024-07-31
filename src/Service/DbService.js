@@ -71,6 +71,11 @@ module.exports = class DatabaseService {
     const document = await customQuery.exec();
     return document;
   };
+  aggregatePipeline = async (pipeline) => {
+    if (!Array.isArray(pipeline)) return;
+    if (Array.isArray(pipeline) && pipeline.length < 1) return;
+    return await this.model.aggregate(pipeline);
+  };
 
   deleteDocument = async (data) => {
     const deletedDocument = await this.model.delete(data);

@@ -24,6 +24,7 @@ const consultancySchema = new mongoose.Schema(
       type: String,
       enum: ["single", "project"],
       required: true,
+      default:'single'
     },
     status: {
       type: String,
