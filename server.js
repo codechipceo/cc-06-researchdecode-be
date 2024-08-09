@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const app = require("./app");
 const rtcServer = require("./src/webRTC/webRtc");
 
-
 // Shut down server if Uncaught Exception occurs
 
 process.on("uncaughtException", (err) => {
@@ -12,16 +11,22 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-// const URI = process.env.MONGODB;
-// mongo connection
-const URI = "mongodb://localhost:27017";
+const activeEnviroment = process.env.NODE_ENV;
+const activeDbString = {
+  local: process.env.MONGODB_LOCAL,
+  test: process.env.MONGODB_TEST,
+  prod: process.env.MONGODB_PROD,
+};
+
+const URI = activeDbString[activeEnviroment];
+
 mongoose
   .connect(URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log("Mongo Db Connected");
+    console.log("Mongo Db Connected", URI);
   })
   .catch((err) => console.log(err));
 
@@ -33,8 +38,8 @@ const server = app.listen(PORT, () => {
 });
 
 rtcServer.listen(5001, () => {
-  console.log("RTC sertver running")
-})
+  console.log("RTC sertver running");
+});
 
 // Shut down server if unhandled rejection occurs
 process.on("unhandledRejection", (err) => {
