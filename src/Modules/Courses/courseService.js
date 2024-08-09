@@ -10,22 +10,16 @@ const { ObjectId } = mongoose.Types;
 const courseService = {
   create: serviceHandler(async (data) => {
     const { files } = data;
-    const courseThumbnail = files["courseThumbnail"][0].path;
-    const courseBanner = files["courseBanner"][0].path;
+    const { courseBanner, courseThumbnail } = files;
 
-    const bannerResult = await uploadFileService.uploadFile(
-      courseBanner,
-      "Images",
-      "auto"
-    );
-    const thumbnailResult = await uploadFileService.uploadFile(
-      courseThumbnail,
-      "Images",
-      "auto"
-    );
+    const promises = [
+      uploadFileService.uploadFile(courseBanner, "Images"),
+      uploadFileService.uploadFile(courseThumbnail, "Images"),
+    ];
+    const [bannerResult, thumbnailResult] = await Promise.all(promises);
 
-    data.courseBanner = bannerResult.secure_url;
-    data.courseThumbnail = thumbnailResult.secure_url;
+    data.courseBanner = bannerResult.Location;
+    data.courseThumbnail = thumbnailResult.Location;
     return await model.save(data);
   }),
 
@@ -50,10 +44,10 @@ const courseService = {
   getById: serviceHandler(async (dataId) => {
     const { courseId, decodedUser } = dataId;
 
-    console.log(decodedUser)
+    console.log(decodedUser);
 
     const aggregatePipeline = [
-      { $match: { _id: new ObjectId(courseId) , isDelete: false} },
+      { $match: { _id: new ObjectId(courseId), isDelete: false } },
       {
         $lookup: {
           from: "courseenrollments",

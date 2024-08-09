@@ -4,7 +4,6 @@ const { paperRequestCtrl } = require("./paperRequestCtrl");
 const { verifyToken } = require("../../Utils/utils");
 const paperRequestRouter = require("express").Router();
 
-const upload = multer({ dest: "uploads/" });
 
 paperRequestRouter.post("/createRequest", paperRequestCtrl.create);
 paperRequestRouter.post(
@@ -20,8 +19,6 @@ paperRequestRouter.post(
 
 paperRequestRouter.post(
   "/uploadRequestPaper",
-
-  upload.single("file"),
   verifyToken,
   paperRequestCtrl.upload
 );

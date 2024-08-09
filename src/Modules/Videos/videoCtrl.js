@@ -7,16 +7,14 @@ const videoCtrl = {
     const videoDTO = req.body;
     const videosData = await videoService.getVideosByCourseId(videoDTO);
 
-    return successResponse({ res, data: videosData,  });
+    return successResponse({ res, data: videosData });
   }),
   create: asyncHandler(async (req, res, next) => {
     const videoDTO = req.body;
 
-  
-    const videoFilePath = req?.file?.path;
     const videoSaved = await videoService.create({
       ...videoDTO,
-      file: videoFilePath,
+      file: req.files,
     });
     return successResponse({
       res: res,

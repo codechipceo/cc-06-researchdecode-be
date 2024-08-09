@@ -7,6 +7,7 @@ const courseCtrl = {
     const courseDto = req.body;
     courseDto.files = req.files;
 
+
     const courseSaved = await courseService.create(courseDto);
     return successResponse({
       res: res,

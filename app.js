@@ -3,6 +3,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const GlobalErrorHandler = require("./src/Errors/GlobalError");
 const { adminRouter, userRouter } = require("./src/Modules/indexRouter");
+const fileUpload = require("express-fileupload");
 const CustomError = require("./src/Errors/CustomError");
 const cloudinary = require("cloudinary");
 
@@ -14,7 +15,10 @@ cloudinary.config({
 
 const app = express();
 
+
+
 // initialise required modules
+app.use(fileUpload());
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(cookieParser());

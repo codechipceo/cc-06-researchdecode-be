@@ -19,6 +19,7 @@
     "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "express": "^4.19.2",
+    "express-fileupload": "^1.5.1",
     "express-validator": "^7.0.1",
     "furniture-backend": "file:",
     "jsonwebtoken": "^9.0.1",

@@ -15,8 +15,8 @@ const videoService = {
   create: serviceHandler(async (data) => {
     const { file } = data;
     if (!file) throw new CustomError(400, "Please select a file to upload");
-    const result = await uploadFileService.uploadFile(file, "Videos", "video");
-    data.videoUrl = result.secure_url;
+    const result = await uploadFileService.uploadFile(file.file, "Videos");
+    data.videoUrl = result.Location;
     return await model.save(data);
   }),
 

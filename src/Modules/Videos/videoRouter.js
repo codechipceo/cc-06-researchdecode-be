@@ -3,12 +3,11 @@ const videoCtrl = require("./videoCtrl");
 const videoRouter = require("express").Router();
 const multer = require("multer");
 
-const upload = multer({ dest: "uploads/" });
+
 
 
 videoRouter.post(
   "/create",
-  upload.single("file"),
   verifyToken,
   videoCtrl.create
 );

@@ -80,7 +80,7 @@ const paperRequestService = {
       updatePayload,
       options
     );
-    const promises=[]
+    const promises = [];
     if (updatedRequest.requestStatus === "approved") {
       const filter = { _id: createdBy };
       const payload = { $inc: { points: -10 } };
@@ -88,8 +88,10 @@ const paperRequestService = {
 
       const approvedByfilter = { _id: fulfilledBy };
       const approvalPayload = { $inc: { points: -10 } };
-      promises.push(studentModel.updateDocument(approvedByfilter, approvalPayload));
-      await Promise.all(promises)
+      promises.push(
+        studentModel.updateDocument(approvedByfilter, approvalPayload)
+      );
+      await Promise.all(promises);
     }
 
     return updatedRequest;
@@ -98,7 +100,7 @@ const paperRequestService = {
   getAllRequestResearchPapers: serviceHandler(async (data) => {
     const query = { requestStatus: data.requestStatus ?? "pending" };
     if (data.userId) {
-      query.requestBy = data.userId
+      query.requestBy = data.userId;
     }
     data.populate = [{ path: "requestBy" }];
     const allRequests = await model.getAllDocuments(query, data);
@@ -107,18 +109,15 @@ const paperRequestService = {
   }),
   uploadRequestPaper: serviceHandler(async (data) => {
     const { requestId, requestBy, file, createdBy } = data;
-    const uploadedPaper = await uploadFileService.uploadFile(
-      file?.path,
-      "PDF",
-      "raw"
-    );
+    console.log(file.file);
+    const uploadedPaper = await uploadFileService.uploadFile(file?.file, "PDF");
 
     const filter = { _id: requestId };
     const updatePayload = {
       requestStatus: "inProgress",
 
       fulfilledBy: createdBy,
-      fileUrl: uploadedPaper.secure_url,
+      fileUrl: uploadedPaper.Location,
     };
     const populate = [{ path: "requestBy" }];
 
