@@ -21,7 +21,6 @@ const courseEnrollmentService = {
         receipt: `rec-${uuidv4()}`,
       };
       const order = await instance.orders.create(options);
-      console.log(order);
       if (order.status === "created") {
         const paymentPayload = {
           studentId: decodedUser._id,
@@ -37,7 +36,6 @@ const courseEnrollmentService = {
           enrolledAt: enrolledAt,
         };
         payment = await paymentService.create(paymentPayload);
-        console.log(payment);
         courseEnrollment = await model.save({
           ...courseEnrollPayload,
           paymentId: payment._id,
@@ -78,7 +76,6 @@ const courseEnrollmentService = {
 
       promises.push(enrollmentUpdate, paymentUpdate);
       const result = await Promise.all(promises);
-      console.log(result);
       return result;
     }
   }),

@@ -6,19 +6,15 @@ const app = express();
 const rtcServer = http.createServer(app);
 const io = socketIo(rtcServer, {
   cors: {
-    origin: "*", // Your client app's URL
+    origin: "http://localhost:5173", // Your client app's URL
     methods: ["GET", "POST"],
   },
 });
 
-
-
-
 io.on("connection", (socket) => {
   console.log("A user connected");
 
-    socket.on("join", (room) => {
-      console.log(room)
+  socket.on("join", (room) => {
     socket.join(room);
     socket.to(room).emit("user-joined", socket.id);
   });
@@ -40,5 +36,4 @@ io.on("connection", (socket) => {
   });
 });
 
-
-module.exports = rtcServer
+module.exports = rtcServer;

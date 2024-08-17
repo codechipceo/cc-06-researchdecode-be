@@ -109,7 +109,6 @@ const paperRequestService = {
   }),
   uploadRequestPaper: serviceHandler(async (data) => {
     const { requestId, requestBy, file, createdBy } = data;
-    console.log(file.file);
     const uploadedPaper = await uploadFileService.uploadFile(file?.file, "PDF");
 
     const filter = { _id: requestId };

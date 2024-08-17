@@ -23,7 +23,6 @@ const consultancyService = {
         receipt: `rec-${uuidv4()}`,
       };
       const order = await instance.orders.create(options);
-      console.log(order);
       if (order.status) {
         const paymentPayload = {
           studentId,

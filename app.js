@@ -15,8 +15,6 @@ cloudinary.config({
 
 const app = express();
 
-
-
 // initialise required modules
 app.use(fileUpload());
 app.use(cors({ origin: "*" }));

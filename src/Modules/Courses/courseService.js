@@ -44,7 +44,6 @@ const courseService = {
   getById: serviceHandler(async (dataId) => {
     const { courseId, decodedUser } = dataId;
 
-    console.log(decodedUser);
 
     const aggregatePipeline = [
       { $match: { _id: new ObjectId(courseId), isDelete: false } },
