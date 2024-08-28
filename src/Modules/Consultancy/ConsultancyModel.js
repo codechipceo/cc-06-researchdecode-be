@@ -29,7 +29,7 @@ const consultancySchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["pending", "inProgress", "completed"],
-      default: "pending",
+      default: "inProgress",
     },
 
     isScheduled: {

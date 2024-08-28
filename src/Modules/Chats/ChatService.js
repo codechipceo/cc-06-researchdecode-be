@@ -1,11 +1,56 @@
 const DatabaseService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
 const Chats = require("./ChatModel");
-
+const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Types;
 const model = new DatabaseService(Chats);
 const chatService = {
   createChats: serviceHandler(async (data) => {
     return await model.save(data);
+  }),
+  getInbox: serviceHandler(async (data) => {
+    const { decodedUser } = data ?? {};
+    const pipeline = [
+      {
+        // Match records where the teacher is the recipient and the sender is a student
+        $match: {
+          recipient: new ObjectId(decodedUser?._id),
+          recipientModel: "Profile",
+          senderModel: "Student",
+        },
+      },
+      {
+        $group: {
+          _id: "$sender", // Group by sender ID (Student ID)
+        },
+      },
+      {
+        $lookup: {
+          from: "students",
+          localField: "_id",
+          foreignField: "_id",
+          as: "studentDetails",
+        },
+      },
+      {
+        $unwind: "$studentDetails",
+      },
+      {
+        // Project to flatten the studentDetails object fields to the top level
+        $project: {
+          _id: 1,
+          firstName: "$studentDetails.firstName",
+          lastName: "$studentDetails.lastName",
+          email: "$studentDetails.email",
+          emailVerified: "$studentDetails.emailVerified",
+          isActive: "$studentDetails.isActive",
+          points: "$studentDetails.points",
+        },
+      },
+    ];
+    const inbox = await model.aggregatePipeline(pipeline);
+
+    return inbox;
   }),
   getAll: serviceHandler(async (data) => {
     const query = {};
@@ -17,11 +62,10 @@ const chatService = {
 
   getChatOfTwoUsers: serviceHandler(async (data) => {
     const { senderId, recepientId } = data;
-
     const query = {
       $or: [
-        { sender: senderId, recepient: recepientId },
-        { sender: recepientId, recepient: senderId },
+        { sender: senderId, recipient: recepientId },
+        { sender: recepientId, recipient: senderId },
       ],
     };
 

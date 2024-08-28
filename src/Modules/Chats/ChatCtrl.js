@@ -24,6 +24,10 @@ const chatCtrl = {
     const courseById = await courseService.getById(courseId);
     return successResponse({ res, data: courseById, msg: "Course By Id" });
   }),
+  inbox: asyncHandler(async (req, res, next) => {
+    const inbox = await chatService.getInbox(req.body);
+    return successResponse({ data: inbox, res, msg: "Teacher Inbox" });
+  }),
 
   update: asyncHandler(async (req, res, next) => {
     const courseDto = req.body;

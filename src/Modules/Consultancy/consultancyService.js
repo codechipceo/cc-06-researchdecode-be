@@ -114,6 +114,22 @@ const consultancyService = {
       await Promise.all(promises);
     }
   }),
+
+  verifyConsultancy: serviceHandler(async (data) => {
+    const { consultancyCardId, supervisorId, decodedUser } = data;
+
+
+    const query = {
+      teacherId: supervisorId,
+      cardId: consultancyCardId,
+      studentId: decodedUser._id,
+      status: "inProgress",
+    };
+
+    const isScheduled = await model.getDocumentById(query);
+    console.log(isScheduled);
+    return isScheduled;
+  }),
 };
 
 module.exports = consultancyService;

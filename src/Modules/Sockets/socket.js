@@ -1,5 +1,5 @@
 const socketIo = require("socket.io");
-// Assume you have a Chat model for saving messages to the database
+const { chatService } = require("../Chats/ChatService");
 const corsOptions = {
   origin: "*", // Add allowed origins here
   methods: ["GET", "POST"],
@@ -11,20 +11,28 @@ const conSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("A new client connected");
+    console.log("A new client connected", socket.id);
+    const clientsCount = io.sockets.sockets.size;
+    console.log(clientsCount)
 
-    socket.on("joinRoom", (params) => {
-      console.log(params)
-      const { roomId, userId } = params;
-      console.log(`${userId} joined room ${roomId}`);
-      socket.emit("roomJoinConfirm", { msg: "new room joined" });
+    socket.on("joinRoom", (roomId) => {
+      console.log(roomId);
+
+      socket.join(roomId);
+      socket.on("leaveroom", (params) => {
+        console.log(params);
+      });
     });
 
-    socket.emit('connection' , socket.id)
 
-    socket.emit("me", socket.id);
+    socket.on("chat", async (params) => {
+      const { roomId } = params;
+      io.to(roomId).emit("message", params);
+      await chatService.createChats(params);
+    });
 
     socket.on("disconnect", () => {
+      console.log("disconnected")
       socket.broadcast.emit("callEnded");
     });
 
@@ -41,12 +49,10 @@ const conSocket = (server) => {
     });
 
     socket.on("offer", (data) => {
-      console.log("Offer received:", data);
       socket.broadcast.emit("offer", data);
     });
 
     socket.on("answer", (data) => {
-      console.log("Answer received:", data);
       socket.broadcast.emit("answer", data);
     });
 

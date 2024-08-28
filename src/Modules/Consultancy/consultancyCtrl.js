@@ -32,6 +32,12 @@ const consultancyCtrl = {
       msg: "Payment Successfully Done",
     });
   }),
+
+  verifyConsultancy: asyncHandler(async (req, res, next) => {
+    const data = req.body;
+    const result = await consultancyService.verifyConsultancy(data);
+    return successResponse({ res: res, data: result });
+  }),
 };
 
 module.exports = consultancyCtrl;
