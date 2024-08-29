@@ -6,6 +6,7 @@ const { adminRouter, userRouter } = require("./src/Modules/indexRouter");
 const fileUpload = require("express-fileupload");
 const CustomError = require("./src/Errors/CustomError");
 const cloudinary = require("cloudinary");
+const peerServer = require("./src/Modules/PeerServer/peerServer");
 
 cloudinary.config({
   cloud_name: "dydmzp82t",
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 });
 app.use("/admin", adminRouter);
 app.use("/user", userRouter);
+app.use("/peerjs", peerServer);
 
 app.use(GlobalErrorHandler);
 
