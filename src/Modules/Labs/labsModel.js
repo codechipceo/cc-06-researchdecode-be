@@ -14,6 +14,13 @@ const labsSchema = new mongoose.Schema({
     default: "Available",
   },
   createdAt: { type: Date, default: Date.now },
+  price: {
+    type: Number,
+    required: function () {
+      return this.isPaid;
+    },
+    min: [0, "Price must be a positive number"],
+  },
 });
 
 const Labs = new mongoose.model("labsSchema", labsSchema);
