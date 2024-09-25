@@ -12,6 +12,15 @@ const labsCtrl = {
       msg: "Lab created Successfully",
     });
   }),
+  search: asyncHandler(async (req, res, next) => {
+    const { q } = req.query;
+    const labs = await labsService.search(q);
+    return successResponse({
+      res: res,
+      data: labs,
+      msg: "Search results fetched successfully",
+    });
+  }),
 };
 
 module.exports = labsCtrl;
