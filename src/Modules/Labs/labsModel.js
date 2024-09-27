@@ -21,6 +21,15 @@ const labsSchema = new mongoose.Schema({
     },
     min: [0, "Price must be a positive number"],
   },
+
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  creatorRole: { type: String, enum: ["Expert", "Student"], required: true },
+  studentRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  totalRequests: { type: Number, default: 0 },
 });
 
 const Labs = new mongoose.model("labsSchema", labsSchema);
