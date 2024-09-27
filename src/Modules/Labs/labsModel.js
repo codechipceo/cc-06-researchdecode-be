@@ -14,6 +14,31 @@ const labsSchema = new mongoose.Schema({
     default: "Available",
   },
   createdAt: { type: Date, default: Date.now },
+  price: {
+    type: Number,
+    required: function () {
+      return this.isPaid;
+    },
+    min: [0, "Price must be a positive number"],
+  },
+
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  createdByRole: {
+    type: String,
+    enum: ["Student", "Teacher", "Admin"],
+    required: true,
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: "createdByRole",
+    required: true,
+  },
+  studentRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Student" }],
+  totalRequests: { type: Number, default: 0 },
 });
 
 const Labs = new mongoose.model("labsSchema", labsSchema);
