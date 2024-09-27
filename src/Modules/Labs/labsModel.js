@@ -29,7 +29,7 @@ const labsSchema = new mongoose.Schema({
   },
   createdByRole: {
     type: String,
-    enum: ["Student", "Teacher"],
+    enum: ["Student", "Teacher", "Admin"],
     required: true,
   },
   createdBy: {
