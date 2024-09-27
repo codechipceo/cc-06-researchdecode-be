@@ -27,8 +27,17 @@ const labsSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  creatorRole: { type: String, enum: ["Expert", "Student"], required: true },
-  studentRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  createdByRole: {
+    type: String,
+    enum: ["Student", "Teacher"],
+    required: true,
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: "createdByRole",
+    required: true,
+  },
+  studentRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Student" }],
   totalRequests: { type: Number, default: 0 },
 });
 
