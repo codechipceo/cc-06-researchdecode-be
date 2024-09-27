@@ -12,7 +12,8 @@ const courseRouter = require("express").Router();
 
 courseRouter.post("/create", verifyToken, courseCtrl.create);
 courseRouter.post("/getAll", courseCtrl.getAll);
-courseRouter.post("/getById",verifyToken, courseCtrl.getById);
+courseRouter.post("/getById", verifyToken, courseCtrl.getById);
+courseRouter.get("/getUserCourses", verifyToken, courseCtrl.getUserCourses);
 courseRouter.post("/update", courseCtrl.update);
 courseRouter.post("/delete", courseCtrl.delete);
 

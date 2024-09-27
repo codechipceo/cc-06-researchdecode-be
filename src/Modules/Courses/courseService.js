@@ -44,7 +44,6 @@ const courseService = {
   getById: serviceHandler(async (dataId) => {
     const { courseId, decodedUser } = dataId;
 
-
     const aggregatePipeline = [
       { $match: { _id: new ObjectId(courseId), isDelete: false } },
       {
@@ -128,6 +127,13 @@ const courseService = {
     const data = await model.aggregatePipeline(aggregatePipeline);
     return data[0];
   }),
+  getUserCourses: async (userId) => {
+    const userCourses = await Course.find({
+      createdBy: userId,
+      isDelete: false,
+    }).lean();
+    return userCourses;
+  },
   update: serviceHandler(async (updateData) => {
     const { courseId } = updateData;
     const filter = { _id: courseId };
