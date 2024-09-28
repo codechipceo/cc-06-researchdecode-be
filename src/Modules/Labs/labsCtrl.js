@@ -13,7 +13,7 @@ const labsCtrl = {
     });
   }),
   search: asyncHandler(async (req, res, next) => {
-    const { q } = req.query;
+    const { q } = req.body;
     const labs = await labsService.search(q);
     return successResponse({
       res: res,
