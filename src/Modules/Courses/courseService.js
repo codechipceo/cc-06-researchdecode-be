@@ -4,6 +4,7 @@ const serviceHandler = require("../../Utils/serviceHandler");
 const uploadFileService = require("../../Utils/uploader");
 const courseEnrollmentService = require("../CourseEnrollment/courseEnrollmentService");
 const Course = require("./coursesModel");
+const CourseEnrollment = require("../CourseEnrollment/courseEnrollmentModel");
 const model = new DbService(Course);
 const { ObjectId } = mongoose.Types;
 
@@ -128,10 +129,10 @@ const courseService = {
     return data[0];
   }),
   getUserCourses: async (userId) => {
-    const userCourses = await Course.find({
-      createdBy: userId,
-      isDelete: false,
-    }).lean();
+    const userCourses = await CourseEnrollment.find({
+      studentId: userId,
+      isEnrolled: true,
+    }).populate("courseId");
     return userCourses;
   },
   update: serviceHandler(async (updateData) => {

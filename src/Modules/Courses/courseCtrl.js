@@ -32,9 +32,16 @@ const courseCtrl = {
   }),
 
   getUserCourses: asyncHandler(async (req, res, next) => {
-    const userId = req.user._id;
+    const userId = req.body.decodedUser._id;
     const userCourses = await courseService.getUserCourses(userId);
-    return successResponse({ res, data: userCourses, msg: "User's Courses" });
+    if (!userCourses || userCourses.length === 0) {
+      return res.status(404).json({ msg: "No courses found for this user." });
+    }
+    return successResponse({
+      res,
+      data: userCourses,
+      msg: "User's Courses",
+    });
   }),
 
   update: asyncHandler(async (req, res, next) => {
