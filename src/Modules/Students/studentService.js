@@ -111,6 +111,17 @@ const studentService = {
 
     return savedUser;
   }),
+
+  userLabs: serviceHandler(async (userId) => {
+    const populate = [
+      {
+        path: "instructor",
+      },
+    ];
+    const labs = await model.getDocumentById({ userId }, { populate });
+
+    return labs;
+  }),
 };
 
 const StudentService = studentService;

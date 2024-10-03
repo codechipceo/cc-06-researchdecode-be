@@ -21,6 +21,11 @@ const studentSchema = new mongoose.Schema(
       lowercase: true,
     },
 
+    UserLabs: {
+      type: mongoose.Schema.Types.ObjectId,
+      require: true,
+      ref: "labsSchema",
+    },
     emailVerified: {
       type: Boolean,
       default: false,
