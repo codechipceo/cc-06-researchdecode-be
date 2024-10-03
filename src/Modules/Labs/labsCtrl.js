@@ -5,6 +5,8 @@ const labsService = require("./labsService");
 const labsCtrl = {
   create: asyncHandler(async (req, res, next) => {
     const labDto = req.body;
+    labDto.files = req.files;
+
     const labSaved = await labsService.create(labDto);
     return successResponse({
       res: res,

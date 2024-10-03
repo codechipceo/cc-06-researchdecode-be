@@ -2,10 +2,24 @@ const DbService = require("../../Service/DbService");
 const Labs = require("./labsModel");
 const model = new DbService(Labs);
 const serviceHandler = require("../../Utils/serviceHandler");
+const uploadFileService = require("../../Utils/uploader");
 
 const labsService = {
   create: serviceHandler(async (data) => {
     data.createdByRole = data.decodedUser.role;
+
+    const { files } = data;
+    const { labBanner, labThumbnail } = files;
+
+    const promises = [
+      uploadFileService.uploadFile(labBanner, "Images/lab"),
+      uploadFileService.uploadFile(labThumbnail, "Images/lab"),
+    ];
+
+    const [bannerResult, thumbnailResult] = await Promise.all(promises);
+
+    data.labBanner = bannerResult.Location;
+    data.labThumbnail = thumbnailResult.Location;
     return await model.save(data);
   }),
 
