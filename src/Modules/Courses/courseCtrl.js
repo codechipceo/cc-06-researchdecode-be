@@ -6,8 +6,6 @@ const courseCtrl = {
   create: asyncHandler(async (req, res, next) => {
     const courseDto = req.body;
     courseDto.files = req.files;
-
-
     const courseSaved = await courseService.create(courseDto);
     return successResponse({
       res: res,
@@ -31,6 +29,17 @@ const courseCtrl = {
     const courseId = req.body;
     const courseById = await courseService.getById(courseId);
     return successResponse({ res, data: courseById, msg: "Course By Id" });
+  }),
+
+  getUserCourses: asyncHandler(async (req, res, next) => {
+    const userId = req.body.decodedUser._id;
+    const userCourses = await courseService.getUserCourses(userId);
+   
+    return successResponse({
+      res,
+      data: userCourses,
+      msg: "User's Courses",
+    });
   }),
 
   update: asyncHandler(async (req, res, next) => {

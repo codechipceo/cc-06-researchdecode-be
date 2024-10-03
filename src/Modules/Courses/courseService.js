@@ -4,6 +4,8 @@ const serviceHandler = require("../../Utils/serviceHandler");
 const uploadFileService = require("../../Utils/uploader");
 const courseEnrollmentService = require("../CourseEnrollment/courseEnrollmentService");
 const Course = require("./coursesModel");
+const CourseEnrollment = require("../CourseEnrollment/courseEnrollmentModel");
+const CustomError = require("../../Errors/CustomError");
 const model = new DbService(Course);
 const { ObjectId } = mongoose.Types;
 
@@ -43,7 +45,6 @@ const courseService = {
   }),
   getById: serviceHandler(async (dataId) => {
     const { courseId, decodedUser } = dataId;
-
 
     const aggregatePipeline = [
       { $match: { _id: new ObjectId(courseId), isDelete: false } },
@@ -128,6 +129,16 @@ const courseService = {
     const data = await model.aggregatePipeline(aggregatePipeline);
     return data[0];
   }),
+  getUserCourses: async (userId) => {
+    const userCourses = await CourseEnrollment.find({
+      studentId: userId,
+      isEnrolled: true,
+    }).populate("courseId");
+    if (!userCourses || userCourses.length === 0) {
+      throw new CustomError(400, "No Course exist yet");
+    }
+    return userCourses;
+  },
   update: serviceHandler(async (updateData) => {
     const { courseId } = updateData;
     const filter = { _id: courseId };

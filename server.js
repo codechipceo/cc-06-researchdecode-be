@@ -2,12 +2,12 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const app = require("./app");
 const CustomError = require("./src/Errors/CustomError");
-const  http = require('http');
+const http = require("http");
 const conSocket = require("./src/Modules/Sockets/socket");
 // Shut down server if Uncaught Exception occurs
 
 const socketServer = http.createServer(app);
-socketServer.listen(5001)
+socketServer.listen(5000);
 conSocket(socketServer);
 process.on("uncaughtException", (err) => {
   console.log(err.name, err.message);
@@ -25,27 +25,24 @@ const activeDbString = {
 const URI = activeDbString[activeEnviroment];
 
 mongoose
-.connect(URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log("Mongo Db Connected", URI);
-})
-.catch((err) => {
-  console.log(err);
-  throw err;
-});
+  .connect(URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Mongo Db Connected", URI);
+  })
+  .catch((err) => {
+    console.log(err);
+    throw err;
+  });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // node start server
 const server = app.listen(PORT, () => {
   console.log("Server is running on port", PORT);
 });
-
-
-
 
 // Shut down server if unhandled rejection occurs
 process.on("unhandledRejection", (err) => {
