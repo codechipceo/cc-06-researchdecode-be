@@ -27,7 +27,7 @@ adminRouter.use("/researchPaper", researchPaperRouter);
 adminRouter.use("/assignment", assignmentRouter);
 adminRouter.use("/consultancyCard", consultancyCardRouter);
 adminRouter.use("/consultancy", consultancyRouter);
-
+adminRouter.use("/labs", labsRouter);
 // USER ROUTES
 userRouter.use("/paperRequest", paperRequestRouter);
 userRouter.use("/student", studentRouter);

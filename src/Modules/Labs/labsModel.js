@@ -39,6 +39,16 @@ const labsSchema = new mongoose.Schema({
   },
   studentRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Student" }],
   totalRequests: { type: Number, default: 0 },
+
+
+  availableSubjects: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      require: true,
+      ref: "labsSchema",
+    },
+  ],
+
 });
 
 const Labs = new mongoose.model("labsSchema", labsSchema);
