@@ -5,6 +5,8 @@ const labsService = require("./labsService");
 const labsCtrl = {
   create: asyncHandler(async (req, res, next) => {
     const labDto = req.body;
+    labDto.files = req.files;
+
     const labSaved = await labsService.create(labDto);
     return successResponse({
       res: res,
@@ -19,6 +21,45 @@ const labsCtrl = {
       res: res,
       data: labs,
       msg: "Search results fetched successfully",
+    })
+  }),
+  getAll: asyncHandler(async (req, res, next) => {
+    const { savedData, totalCount } = await labsService.getAll();
+    return successResponse({
+      res,
+      data: savedData,
+      count: totalCount,
+      msg: "All Labs",
+    });
+  }),
+  getLabById: asyncHandler(async (req, res, next) => {
+    const { labId } = req.params;
+    const { savedData, totalCount } = await labsService.getLabById(labId);
+    return successResponse({
+      res,
+      data: savedData,
+      count: totalCount,
+      msg: "Labs by Id",
+    });
+  }),
+  updateLab: asyncHandler(async (req, res, next) => {
+    const { labId } = req.params;
+    const data = { labId, ...req.body };
+
+    const updatedLab = await labsService.update(data);
+    return successResponse({
+      res,
+      data: updatedLab,
+      msg: "Lab Updated successfully",
+    });
+  }),
+  deleteLab: asyncHandler(async (req, res, next) => {
+    const { labId } = req.params;
+    const deletedDoc = await labsService.delete(labId);
+    return successResponse({
+      res,
+      data: deletedDoc,
+      msg: "Course Deleted Successfully",
     });
   }),
 };
