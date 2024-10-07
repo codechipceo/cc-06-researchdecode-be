@@ -5,6 +5,15 @@ const serviceHandler = require("../../Utils/serviceHandler");
 const uploadFileService = require("../../Utils/uploader");
 
 const labsService = {
+  search: serviceHandler(async (searchTerm) => {
+    const labs = await model.getAllDocuments({
+      $or: [
+        { title: { $regex: searchTerm, $options: "i" } },
+        { description: { $regex: searchTerm, $options: "i" } },
+      ],
+    });
+    return labs;
+  }),
   create: serviceHandler(async (data) => {
     data.createdByRole = data.decodedUser.role;
 

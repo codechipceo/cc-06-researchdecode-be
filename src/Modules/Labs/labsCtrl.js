@@ -14,6 +14,15 @@ const labsCtrl = {
       msg: "Lab created Successfully",
     });
   }),
+  search: asyncHandler(async (req, res, next) => {
+    const { q } = req.body;
+    const labs = await labsService.search(q);
+    return successResponse({
+      res: res,
+      data: labs,
+      msg: "Search results fetched successfully",
+    })
+  }),
   getAll: asyncHandler(async (req, res, next) => {
     const { savedData, totalCount } = await labsService.getAll();
     return successResponse({
