@@ -27,7 +27,14 @@ const studentCtrl = {
   }),
 
   getById: asyncHandler(async (req, res, next) => {
-    const  studentId  = req.body;
+    const studentId = req.body;
+    const studentById = await StudentService.getById(studentId);
+    return successResponse({ res, data: studentById, msg: "Student By Id" });
+  }),
+
+  getStudentLab: asyncHandler(async (req, res, next) => {
+    const { StudentId } = req.params;
+    const studentId = { ...req.body, studentId: StudentId };
     const studentById = await StudentService.getById(studentId);
     return successResponse({ res, data: studentById, msg: "Student By Id" });
   }),
@@ -39,6 +46,16 @@ const studentCtrl = {
       res,
       data: updatedStudent,
       msg: "Updated student successfully",
+    });
+  }),
+
+  addLabsToStudent: asyncHandler(async (req, res, next) => {
+    const studentDTO = { ...req.body, ...req.params };
+    const updatedStudent = await StudentService.update(studentDTO);
+    return successResponse({
+      res,
+      data: updatedStudent,
+      msg: "Lab Added to Student",
     });
   }),
 
@@ -62,22 +79,18 @@ const studentCtrl = {
     });
   }),
 
-
   verifyEmail: async (req, res, next) => {
+    // Save the decoded user from the request
+    const decodedUser = req.decodedUser;
 
-      // Save the decoded user from the request
-      const decodedUser = req.decodedUser;
+    const user = await StudentService.verifyEmail(decodedUser);
 
-     const user= await StudentService.verifyEmail(decodedUser);
-
-
-      return successResponse({
-        res,
-        data: user,
-        msg: "email verified",
-      })
-  }
-}
-
+    return successResponse({
+      res,
+      data: user,
+      msg: "email verified",
+    });
+  },
+};
 
 module.exports = studentCtrl;
