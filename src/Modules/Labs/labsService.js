@@ -16,24 +16,12 @@ const labsService = {
   }),
   create: serviceHandler(async (data) => {
     data.createdByRole = data.decodedUser.role;
-
-    const { files } = data;
-    const { labBanner, labThumbnail } = files;
-
-    const promises = [
-      uploadFileService.uploadFile(labBanner, "Images/lab"),
-      uploadFileService.uploadFile(labThumbnail, "Images/lab"),
-    ];
-
-    const [bannerResult, thumbnailResult] = await Promise.all(promises);
-
-    data.labBanner = bannerResult.Location;
-    data.labThumbnail = thumbnailResult.Location;
     return await model.save(data);
   }),
 
-  getAll: serviceHandler(async () => {
-    const query = { isDeleted: false };
+  getAll: serviceHandler(async (data) => {
+    const query = { isDeleted: false, ...data };
+    console.log(query);
     const populate = [
       {
         path: "studentRequests",
