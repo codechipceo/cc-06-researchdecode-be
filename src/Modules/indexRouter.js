@@ -13,6 +13,9 @@ const { subjectRouter } = require("./Subject/subjectRouter");
 const { teacherRouter } = require("./Teachers/teacherRouter");
 const { videoRouter } = require("./Videos/videoRouter");
 const { labsRouter } = require("./Labs/labsRouter");
+const {
+  collaborationRequestRouter,
+} = require("./Collaboration/collaborationRouter");
 
 const adminRouter = require("express").Router();
 const userRouter = require("express").Router();
@@ -39,5 +42,6 @@ userRouter.use("/consultancyCard", consultancyCardRouter);
 userRouter.use("/consultancy", consultancyRouter);
 userRouter.use("/courseEnrollment", verifyToken, courseEnrollmentRouter);
 userRouter.use("/labs", labsRouter);
+userRouter.use("/collaboration", collaborationRequestRouter);
 
 module.exports = { adminRouter, userRouter };
