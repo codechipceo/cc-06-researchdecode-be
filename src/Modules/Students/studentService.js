@@ -40,7 +40,6 @@ const studentService = {
     const query = { isDelete: false };
     const savedData = await model.getAllDocuments(query, data);
     const totalCount = await model.totalCounts({ isDelete: false });
-
     return { savedData, totalCount };
   }),
   getBotUsers: serviceHandler(async (data) => {
@@ -52,7 +51,8 @@ const studentService = {
   getById: serviceHandler(async (dataId) => {
     const { studentId } = dataId;
     const query = { isDelete: false, _id: studentId };
-    const savedDataById = await model.getDocumentById(query);
+
+    const savedDataById = await model.getDocumentById(query, "lab");
     return savedDataById;
   }),
 
@@ -60,6 +60,7 @@ const studentService = {
     const { StudentId } = updateData;
     const filter = { _id: StudentId };
     const updatePayload = { ...updateData };
+    console.log(StudentId);
     const updatedDoc = await model.updateDocument(filter, updatePayload);
     return updatedDoc;
   }),

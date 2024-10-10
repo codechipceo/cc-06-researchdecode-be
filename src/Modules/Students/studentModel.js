@@ -75,6 +75,13 @@ const studentSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    labs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        require: true,
+        ref: "Lab",
+      },
+    ],
   },
   { timestamps: true }
 );
