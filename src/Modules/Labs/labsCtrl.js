@@ -5,7 +5,6 @@ const labsService = require("./labsService");
 const labsCtrl = {
   create: asyncHandler(async (req, res, next) => {
     const labDto = req.body;
-    labDto.files = req.files;
 
     const labSaved = await labsService.create(labDto);
     return successResponse({
@@ -21,10 +20,10 @@ const labsCtrl = {
       res: res,
       data: labs,
       msg: "Search results fetched successfully",
-    })
+    });
   }),
   getAll: asyncHandler(async (req, res, next) => {
-    const { savedData, totalCount } = await labsService.getAll();
+    const { savedData, totalCount } = await labsService.getAll(req.query);
     return successResponse({
       res,
       data: savedData,

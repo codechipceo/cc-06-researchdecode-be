@@ -22,14 +22,9 @@ const labsSchema = new mongoose.Schema({
     min: [0, "Price must be a positive number"],
   },
 
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
   createdByRole: {
     type: String,
-    enum: ["Student", "Teacher", "Admin"],
+    enum: ["Student", "TEACHER", "Admin"],
     required: true,
   },
   createdBy: {
@@ -39,8 +34,6 @@ const labsSchema = new mongoose.Schema({
   },
   studentRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Student" }],
   totalRequests: { type: Number, default: 0 },
-
-
   availableSubjects: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -48,8 +41,11 @@ const labsSchema = new mongoose.Schema({
       ref: "labsSchema",
     },
   ],
-
+  isDeleted: {
+    type: mongoose.Schema.Types.Boolean,
+    default: false,
+  },
 });
 
-const Labs = new mongoose.model("labsSchema", labsSchema);
+const Labs = new mongoose.model("labs", labsSchema);
 module.exports = Labs;
