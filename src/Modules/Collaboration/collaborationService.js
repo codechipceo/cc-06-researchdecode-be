@@ -9,8 +9,15 @@ const collaborationService = {
     return newCollaboration;
   },
 
-  getAllCollaborations: async () => {
-    return await model.getAllDocuments();
+  getAllCollaborations: async (data) => {
+    ents;
+    const query = { isDelete: false };
+
+    const savedData = await model.getAllDocuments(query);
+
+    const totalCount = await model.totalCounts(query);
+
+    return { savedData, totalCount };
   },
 
   getCollaborationById: async (paperId) => {

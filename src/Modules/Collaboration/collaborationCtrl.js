@@ -5,7 +5,7 @@ const CustomError = require("../../../src/Errors/CustomError"); // Ensure you im
 
 const collaborationRequestCtrl = {
   create: asyncHandler(async (req, res, next) => {
-    const docDTO = req.body; // Document Data Transfer Object
+    const docDTO = req.body;
     const newCollaboration = await collaborationService.createCollaboration(
       docDTO
     );
@@ -17,10 +17,18 @@ const collaborationRequestCtrl = {
   }),
 
   getAll: asyncHandler(async (req, res, next) => {
-    const collaborations = await collaborationService.getAllCollaborations();
-    successResponse({
+    // Extract any necessary data from the request body
+    const collaborationDto = req.body;
+
+    // Call the service to get all collaborations
+    const { savedData, totalCount } =
+      await collaborationService.getAllCollaborations(collaborationDto);
+
+    // Return the success response
+    return successResponse({
       res,
-      data: collaborations,
+      data: savedData,
+      count: totalCount,
       msg: "All Collaborations Fetched",
     });
   }),
