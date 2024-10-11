@@ -8,6 +8,10 @@ const CollaborationSchema = new mongoose.Schema(
       ref: "Student",
       required: true,
     },
+    isDelete: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

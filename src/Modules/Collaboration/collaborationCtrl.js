@@ -17,14 +17,11 @@ const collaborationRequestCtrl = {
   }),
 
   getAll: asyncHandler(async (req, res, next) => {
-    // Extract any necessary data from the request body
     const collaborationDto = req.body;
 
-    // Call the service to get all collaborations
     const { savedData, totalCount } =
       await collaborationService.getAllCollaborations(collaborationDto);
 
-    // Return the success response
     return successResponse({
       res,
       data: savedData,

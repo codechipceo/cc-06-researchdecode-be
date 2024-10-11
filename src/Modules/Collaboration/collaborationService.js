@@ -10,10 +10,25 @@ const collaborationService = {
   },
 
   getAllCollaborations: async (data) => {
-    ents;
     const query = { isDelete: false };
+    const { search } = data;
 
-    const savedData = await model.getAllDocuments(query);
+    let savedData;
+    if (search) {
+      const searchCondition = {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { abstract: { $regex: search, $options: "i" } },
+        ],
+      };
+
+      savedData = await model.getAllDocuments(
+        { ...query, ...searchCondition },
+        data
+      );
+    } else {
+      savedData = await model.getAllDocuments(query, data);
+    }
 
     const totalCount = await model.totalCounts(query);
 
@@ -25,25 +40,11 @@ const collaborationService = {
   },
 
   updateCollaboration: async (paperId, updateData) => {
-    return await model.updateDocument(
-      { paperId },
-      updateData,
-      { new: true } // Return the updated document
-    );
+    return await model.updateDocument({ paperId }, updateData, { new: true });
   },
 
   deleteCollaboration: async (paperId) => {
     return await model.deleteDocument({ paperId });
-  },
-
-  searchCollaborations: async (query) => {
-    const searchCondition = {
-      $or: [
-        { title: { $regex: query, $options: "i" } },
-        { abstract: { $regex: query, $options: "i" } },
-      ],
-    };
-    return await model.getAllDocuments(searchCondition);
   },
 
   getCollaborationsByStudentId: async (studentId) => {

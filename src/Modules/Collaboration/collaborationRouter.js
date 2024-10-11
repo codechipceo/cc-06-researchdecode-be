@@ -9,8 +9,6 @@ collaborationRequestRouter.post("/getById", collaborationRequestCtrl.getById);
 collaborationRequestRouter.post("/update", collaborationRequestCtrl.update);
 collaborationRequestRouter.post("/delete", collaborationRequestCtrl.delete);
 
-collaborationRequestRouter.post("/search", collaborationRequestCtrl.search);
-
 collaborationRequestRouter.post(
   "/student",
   collaborationRequestCtrl.getByStudentId
