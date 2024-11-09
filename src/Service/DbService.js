@@ -78,7 +78,7 @@ module.exports = class DatabaseService {
   };
 
   deleteDocument = async (data) => {
-    const deletedDocument = await this.model.delete(data);
+    const deletedDocument = await this.model.deleteOne(data);
     return deletedDocument;
   };
 
