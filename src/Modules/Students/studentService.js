@@ -105,7 +105,7 @@ const studentService = {
 
   verifyEmail: serviceHandler(async (decodedUser) => {
     const { _id } = decodedUser;
-console.log("_id",_id);
+
 
     // Find the user in the database by userId
     const user = await model.getDocumentById({ _id });

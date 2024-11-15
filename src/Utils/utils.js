@@ -23,7 +23,7 @@ async function comparePasswords(plainPassword, hashedPassword) {
 
 const generateToken = (userId) => {
   const { _id, firstName, userType } = userId;
-  console.log(_id);
+
   
   const payload = {
     _id,
@@ -59,7 +59,7 @@ const verifyToken = (req, res, next) => {
 
     req.decodedUser = decodedUser;
 
-    console.log("Decoded user in verifyToken:", decodedUser); 
+    // console.log(" user in verifyToken:", decodedUser); 
 
     next();
   } catch (error) {

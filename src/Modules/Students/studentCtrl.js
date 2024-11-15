@@ -67,7 +67,7 @@ const studentCtrl = {
 
       // Save the decoded user from the request
       const decodedUser = req.decodedUser;
-console.log("decoded user is ",decodedUser);
+// console.log("decoded user is ",decodedUser);
 
      const user= await StudentService.verifyEmail(decodedUser);
 
