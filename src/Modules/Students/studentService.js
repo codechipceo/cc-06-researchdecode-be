@@ -19,21 +19,32 @@ const studentService = {
       throw new Error("Email and password are required");
     }
     const hashedPassword = await hashPassword(password);
-
-    // Save the student data to the database
-    const savedData = await model.save({
-      email,
-      ...userData,
-      password: hashedPassword,
-    });
-
-    // Generate a token for email verification
-    const token = generateToken({ ...savedData, password: "" });
-
-    // Send verification email
-    // await sendVerificationEmail(email, token);
-
-    return { msg: "Student created Successfully", data: savedData, token };
+    try {
+      const savedData = await model.save({
+        email,
+        ...userData,
+        password: hashedPassword,
+      });
+    
+      if (!savedData || !savedData._id) {
+        throw new Error("Failed to save user or generate user ID");
+      }
+    
+      const token = generateToken({
+        _id: savedData._id,
+        firstName: savedData.firstName,
+        userType: savedData.userType,
+      });
+    
+      await sendVerificationEmail(email, token);
+    
+      return { msg: "Student created successfully", data: savedData, token };
+    } catch (error) {
+      console.error("Error in user creation:", error);
+      throw new Error("User creation failed");
+    }
+    
+    
   }),
 
   getAll: serviceHandler(async (data) => {
@@ -93,13 +104,11 @@ const studentService = {
   getUsersChattedWith: serviceHandler(async (userObj) => {}),
 
   verifyEmail: serviceHandler(async (decodedUser) => {
-    const { userId } = decodedUser.userId.userId;
-
-    // Define the query to find the user
-    const query = { _id: userId };
+    const { _id } = decodedUser;
+console.log("_id",_id);
 
     // Find the user in the database by userId
-    const user = await model.getDocumentById({ userId });
+    const user = await model.getDocumentById({ _id });
 
     if (!user) {
       throw new Error("User not found");
