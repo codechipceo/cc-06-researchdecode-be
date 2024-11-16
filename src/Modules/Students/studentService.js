@@ -19,32 +19,28 @@ const studentService = {
       throw new Error("Email and password are required");
     }
     const hashedPassword = await hashPassword(password);
-    try {
-      const savedData = await model.save({
-        email,
-        ...userData,
-        password: hashedPassword,
-      });
-    
-      if (!savedData || !savedData._id) {
-        throw new Error("Failed to save user or generate user ID");
-      }
-    
-      const token = generateToken({
-        _id: savedData._id,
-        firstName: savedData.firstName,
-        userType: savedData.userType,
-      });
-    
-      await sendVerificationEmail(email, token);
-    
-      return { msg: "Student created successfully", data: savedData, token };
-    } catch (error) {
-      console.error("Error in user creation:", error);
-      throw new Error("User creation failed");
-    }
-    
-    
+
+    // Save the student data to the database
+    const savedData = await model.save({
+      email,
+      ...userData,
+      password: hashedPassword,
+    });
+
+const student ={
+  _id:savedData._id,
+  firstName:savedData.firstName,
+  userType:savedData.userType
+
+}
+    // Generate a token for email verification
+    const token = generateToken(student)
+
+
+    // Send verification email
+    await sendVerificationEmail(email, token);
+
+    return { msg: "Student created Successfully", data: savedData, token };
   }),
 
   getAll: serviceHandler(async (data) => {
@@ -103,23 +99,22 @@ const studentService = {
   }),
   getUsersChattedWith: serviceHandler(async (userObj) => {}),
 
-  verifyEmail: serviceHandler(async (decodedUser) => {
-    const { _id } = decodedUser;
+ verifyEmail: serviceHandler(async (decodedUser) => {
+  const { _id } = decodedUser;
 
+ 
+  const query = { _id };
+  const updateData = { emailVerified: true };
 
-    // Find the user in the database by userId
-    const user = await model.getDocumentById({ _id });
+  const options = { new: true }; 
+  const savedUser = await model.updateDocument(query, updateData, options);
 
-    if (!user) {
-      throw new Error("User not found");
-    }
+  if (!savedUser) {
+    throw new Error("User not found or could not be updated");
+  }
+  return savedUser;
+}),
 
-    // Update the emailVerified status
-    user.emailVerified = true;
-    const savedUser = await user.save();
-
-    return savedUser;
-  }),
 };
 
 const StudentService = studentService;

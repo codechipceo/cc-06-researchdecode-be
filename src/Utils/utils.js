@@ -23,8 +23,6 @@ async function comparePasswords(plainPassword, hashedPassword) {
 
 const generateToken = (userId) => {
   const { _id, firstName, userType } = userId;
-
-  
   const payload = {
     _id,
     firstName,
@@ -47,32 +45,22 @@ const generateAdminToken = (adminObj) => {
 
 const verifyToken = (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    const token = req.header("authToken"); // Extract the token from header
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ msg: "Token missing or invalid" });
+    if (!token) {
+      return res.status(401).json({ msg: "Authorization header missing" });
     }
 
-    const token = authHeader.split(" ")[1];
-
-    const decodedUser = jwt.verify(token, process.env.JWT_SECRET);
-
+    const decodedUser = jwt.verify(token, process.env.JWT_SECRET); // Verify the token
+    req.body.createdBy = decodedUser._id;
+    req.body.decodedUser = decodedUser;
+    req.body.userRole = decodedUser.role; // Attach decoded user to request object
     req.decodedUser = decodedUser;
-
-    // console.log(" user in verifyToken:", decodedUser); 
-
     next();
   } catch (error) {
-    console.error("Token verification failed:", error.message);
-    if (error.name === "TokenExpiredError") {
-      return res.status(401).json({ msg: "Token has expired" });
-    }
     return res.status(401).json({ msg: "Token verification failed" });
   }
 };
-
-
-
 
 const checkAccess = (requiredPermissions) => {
   return (req, res, next) => {
