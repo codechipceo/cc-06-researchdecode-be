@@ -27,11 +27,18 @@ const studentService = {
       password: hashedPassword,
     });
 
+const student ={
+  _id:savedData._id,
+  firstName:savedData.firstName,
+  userType:savedData.userType
+
+}
     // Generate a token for email verification
-    const token = generateToken({ ...savedData, password: "" });
+    const token = generateToken(student)
+
 
     // Send verification email
-    // await sendVerificationEmail(email, token);
+    await sendVerificationEmail(email, token);
 
     return { msg: "Student created Successfully", data: savedData, token };
   }),
@@ -92,25 +99,22 @@ const studentService = {
   }),
   getUsersChattedWith: serviceHandler(async (userObj) => {}),
 
-  verifyEmail: serviceHandler(async (decodedUser) => {
-    const { userId } = decodedUser.userId.userId;
+ verifyEmail: serviceHandler(async (decodedUser) => {
+  const { _id } = decodedUser;
 
-    // Define the query to find the user
-    const query = { _id: userId };
+ 
+  const query = { _id };
+  const updateData = { emailVerified: true };
 
-    // Find the user in the database by userId
-    const user = await model.getDocumentById({ userId });
+  const options = { new: true }; 
+  const savedUser = await model.updateDocument(query, updateData, options);
 
-    if (!user) {
-      throw new Error("User not found");
-    }
+  if (!savedUser) {
+    throw new Error("User not found or could not be updated");
+  }
+  return savedUser;
+}),
 
-    // Update the emailVerified status
-    user.emailVerified = true;
-    const savedUser = await user.save();
-
-    return savedUser;
-  }),
 };
 
 const StudentService = studentService;

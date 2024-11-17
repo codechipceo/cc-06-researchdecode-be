@@ -1,4 +1,7 @@
 const nodemailer = require("nodemailer");
+const pug = require("pug");
+const path = require("path");
+
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -9,11 +12,17 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendVerificationEmail = async (email, token) => {
+  const url = `${process.env.BASE_URL}/?token=${token}`;
+
+  const templatePath = path.join(__dirname, '..', 'templates', 'verification-email.pug');
+
+  const html = pug.renderFile(templatePath, { url });
+
   const mailOptions = {
     from: process.env.EMAIL,
     to: email,
     subject: "Email Verification",
-    text: `Please verify your email using the following link: ${process.env.BASE_URL}/verify-email?token=${token}`,
+    html,
   };
 
   try {

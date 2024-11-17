@@ -55,6 +55,7 @@ const verifyToken = (req, res, next) => {
     req.body.createdBy = decodedUser._id;
     req.body.decodedUser = decodedUser;
     req.body.userRole = decodedUser.role; // Attach decoded user to request object
+    req.decodedUser = decodedUser;
     next();
   } catch (error) {
     return res.status(401).json({ msg: "Token verification failed" });
