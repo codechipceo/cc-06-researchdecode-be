@@ -8,5 +8,5 @@ consultancyRouter.post("/getAll", consultancyCtrl.getAll);
 consultancyRouter.post("/getById", consultancyCtrl.getById);
 consultancyRouter.post("/verifypayment", consultancyCtrl.verifyPayment);
 consultancyRouter.post("/verifyConsultancy",verifyToken, consultancyCtrl.verifyConsultancy);
-
+consultancyRouter.post("/endConsultancy",verifyToken, consultancyCtrl.endConsultancy);
 module.exports = consultancyRouter;

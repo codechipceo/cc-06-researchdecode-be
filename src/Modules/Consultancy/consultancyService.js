@@ -130,6 +130,33 @@ const consultancyService = {
     console.log(isScheduled);
     return isScheduled;
   }),
+
+endConsultancy: serviceHandler(async (data) => {
+  const { consultancyCardId, supervisorId, decodedUser } = data;
+
+  const query = {
+    teacherId: supervisorId,     
+    cardId: consultancyCardId,    
+    studentId: decodedUser._id,   
+    status: "inProgress",         
+  };
+
+  const matchingDocument = await model.getDocumentById(query);
+
+  if (!matchingDocument) {
+    throw new Error("No matching document found. The consultancy may not exist or the status may not be 'inProgress'.");
+  }
+
+  matchingDocument.status = "completed";
+
+  await model.save(matchingDocument);
+
+  // console.log("Updated Document:", matchingDocument);
+
+  return matchingDocument;
+}),
+
+
 };
 
 module.exports = consultancyService;
