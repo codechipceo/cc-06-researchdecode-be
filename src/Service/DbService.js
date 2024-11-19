@@ -17,19 +17,12 @@ module.exports = class DatabaseService {
     return document;
   };
   getAllDocuments = async (query, options = {}) => {
-    const { limit, sort, skip, populate, isDelete,search } = options;
+    const { limit, sort, skip, populate, isDelete } = options;
     let updatedQuery;
     if (options.hasOwnProperty("isDelete")) {
       updatedQuery = { isDelete: isDelete ? isDelete : false, ...query };
     }
     updatedQuery = { ...query };
-
-
-    if (search && search.trim() !== "") {
-     
-      updatedQuery.courseName = { $regex: search, $options: "i" };
-    }
-
 
     let customQuery = this.model.find(updatedQuery);
 
