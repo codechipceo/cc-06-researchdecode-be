@@ -10,8 +10,18 @@ const consultancyCardService = {
   }),
 
   getAll: serviceHandler(async (data) => {
-    data.populate=[{path :'teacherId'}]
-    return await model.getAllDocuments({}, data);
+    const { search } = data;
+    const query = { isDelete: false };
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+    
+    data.populate = [{ path: "teacherId" }];
+    return await model.getAllDocuments(query, data);
   }),
 
   getById: serviceHandler(async (data) => {
@@ -21,5 +31,6 @@ const consultancyCardService = {
     return await model.getDocumentById(query, populateOptions);
   }),
 };
+
 
 module.exports = consultancyCardService;

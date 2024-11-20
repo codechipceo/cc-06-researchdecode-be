@@ -25,24 +25,32 @@ const courseService = {
     return await model.save(data);
   }),
 
-  getAll: serviceHandler(async (data) => {
-    const role = data.userRole;
+getAll: serviceHandler(async (data) => {
+  const role = data.userRole;
 
-    const query = { isDelete: false };
-    if (role === "TEACHER") {
-      query.createdBy = data.createdBy;
-    }
-    const populate = [
-      {
-        path: "instructor",
-      },
-    ];
-    const options = { ...data, populate };
+  const query = { isDelete: false };
 
-    const savedData = await model.getAllDocuments(query, options);
-    const totalCount = await model.totalCounts({ isDelete: false });
-    return { savedData, totalCount };
-  }),
+  if (role === "TEACHER") {
+    query.createdBy = data.createdBy;
+  }
+  const { search } = data;
+  if (search) {
+    query.courseName = { $regex: search, $options: "i" }; 
+  }
+  const populate = [
+    {
+      path: "instructor", 
+    },
+  ];
+  const options = { ...data, populate };
+
+  const savedData = await model.getAllDocuments(query, options);
+  const totalCount = await model.totalCounts({ isDelete: false });
+
+  return { savedData, totalCount };
+}),
+
+
   getById: serviceHandler(async (dataId) => {
     const { courseId, decodedUser } = dataId;
 
