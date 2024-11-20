@@ -130,6 +130,20 @@ const consultancyService = {
     console.log(isScheduled);
     return isScheduled;
   }),
+  validateConsultancy:serviceHandler(async(data)=>{
+    const { consultancyCardId, supervisorId, decodedUser } = data;
+
+    const query = {
+      teacherId: supervisorId,
+      cardId: consultancyCardId,
+      studentId: decodedUser._id,
+      status: "inProgress",
+    };
+
+    const document= await model.getDocumentById(query);
+    return document.status === "inProgress" ? true : false;
+
+  })
 };
 
 module.exports = consultancyService;

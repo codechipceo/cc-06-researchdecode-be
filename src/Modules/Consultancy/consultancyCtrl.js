@@ -38,6 +38,12 @@ const consultancyCtrl = {
     const result = await consultancyService.verifyConsultancy(data);
     return successResponse({ res: res, data: result });
   }),
+
+  validateConsultancy: asyncHandler(async(req,res)=>{
+    const data=req.body;
+    const result=await conssultancyService.validateConsultancy(data);
+    return successResponse({res:res, data:result})
+  })
 };
 
 module.exports = consultancyCtrl;
