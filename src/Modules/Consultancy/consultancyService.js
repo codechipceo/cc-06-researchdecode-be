@@ -137,7 +137,6 @@ const consultancyService = {
       teacherId: supervisorId,
       cardId: consultancyCardId,
       studentId: decodedUser._id,
-      status: "inProgress",
     };
 
     const document= await model.getDocumentById(query);
