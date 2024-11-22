@@ -118,7 +118,6 @@ const consultancyService = {
   verifyConsultancy: serviceHandler(async (data) => {
     const { consultancyCardId, supervisorId, decodedUser } = data;
 
-
     const query = {
       teacherId: supervisorId,
       cardId: consultancyCardId,
@@ -131,32 +130,56 @@ const consultancyService = {
     return isScheduled;
   }),
 
-endConsultancy: serviceHandler(async (data) => {
-  const { consultancyCardId, supervisorId, decodedUser } = data;
+  endConsultancy: serviceHandler(async (data) => {
+    const { consultancyCardId, supervisorId, decodedUser } = data;
 
-  const query = {
-    teacherId: supervisorId,     
-    cardId: consultancyCardId,    
-    studentId: decodedUser._id,   
-    status: "inProgress",         
-  };
+    const query = {
+      teacherId: supervisorId,
+      cardId: consultancyCardId,
+      studentId: decodedUser._id,
+      status: "inProgress",
+    };
 
-  const matchingDocument = await model.getDocumentById(query);
+    const matchingDocument = await model.getDocumentById(query);
 
-  if (!matchingDocument) {
-    throw new Error("No matching document found. The consultancy may not exist or the status may not be 'inProgress'.");
-  }
+    if (!matchingDocument) {
+      throw new Error(
+        "No matching document found. The consultancy may not exist or the status may not be 'inProgress'."
+      );
+    }
 
-  matchingDocument.status = "completed";
+    matchingDocument.status = "completed";
 
-  await model.save(matchingDocument);
+    await model.save(matchingDocument);
 
-  // console.log("Updated Document:", matchingDocument);
+    // console.log("Updated Document:", matchingDocument);
 
-  return matchingDocument;
-}),
+    return matchingDocument;
+  }),
 
+  activeOrInactiveConsultancy: serviceHandler(async (data) => {
+    const { consultancyCardId, supervisorId, decodedUser } = data;
 
+    const query = {
+      teacherId: supervisorId,
+      cardId: consultancyCardId,
+      studentId: decodedUser._id,
+    };
+
+    const consultancy = await model.getDocumentById(query);
+    if (!consultancy) {
+      throw new Error("No matching document found.");
+    }
+    if (consultancy.type === "single") {
+      return consultancy.status === "inProgress"? true : false;
+    } else if (consultancy.scheduledDate) {
+      const currentDate = new Date();
+      const scheduledDate = new Date(consultancy.scheduledDate);
+      const daysDifference = (currentDate - scheduledDate) / (1000 * 3600 * 24);
+
+      return daysDifference <= 30 ? true : false;
+    }
+  }),
 };
 
 module.exports = consultancyService;
