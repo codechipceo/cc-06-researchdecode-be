@@ -37,15 +37,15 @@ const collaborationService = {
   },
 
   getCollaborationById: async (paperId) => {
-    return await model.getDocumentById({ paperId });
+    return await model.getDocumentById({ _id :paperId });
   },
 
   updateCollaboration: async (paperId, updateData) => {
-    return await model.updateDocument({ paperId }, updateData, { new: true });
+    return await model.updateDocument({_id : paperId }, updateData, { new: true });
   },
 
   deleteCollaboration: async (paperId) => {
-    return await model.deleteDocument({ paperId });
+    return await model.deleteDocument({ _id :paperId });
   },
 
   getCollaborationsByStudentId: async (studentId) => {

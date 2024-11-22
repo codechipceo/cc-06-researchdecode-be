@@ -51,19 +51,13 @@ const collaborationRequestCtrl = {
     const { paperId, studentId, ...updateData } = req.body;
 
     const collaboration = await collaborationService.getCollaborationById(
-      paperId
+      {_id :paperId}
     );
 
     if (!collaboration) {
       throw new CustomError(404, "Collaboration not found");
     }
 
-    if (collaboration.postedBy.studentId.toString() !== studentId) {
-      throw new CustomError(
-        403,
-        "You are not authorized to update this collaboration"
-      );
-    }
 
     const updatedCollaboration = await collaborationService.updateCollaboration(
       paperId,
@@ -86,13 +80,6 @@ const collaborationRequestCtrl = {
 
     if (!collaboration) {
       throw new CustomError(404, "Collaboration not found");
-    }
-
-    if (collaboration.postedBy.studentId.toString() !== studentId) {
-      throw new CustomError(
-        403,
-        "You are not authorized to delete this collaboration"
-      );
     }
 
     await collaborationService.deleteCollaboration(paperId);
