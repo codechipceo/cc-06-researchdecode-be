@@ -13,12 +13,12 @@ const collaborationService = {
     const query = { isDelete: false };
     const { search } = data;
 
-    let savedData;
+    let savedData, totalCount=0;
     if (search) {
       const searchCondition = {
         $or: [
           { title: { $regex: search, $options: "i" } },
-          { abstract: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
         ],
       };
 
@@ -26,29 +26,30 @@ const collaborationService = {
         { ...query, ...searchCondition },
         data
       );
+      totalCount = await model.totalCounts({...query,...searchCondition });
     } else {
       savedData = await model.getAllDocuments(query, data);
+      totalCount = await model.totalCounts(query);
     }
 
-    const totalCount = await model.totalCounts(query);
 
     return { savedData, totalCount };
   },
 
   getCollaborationById: async (paperId) => {
-    return await model.getDocumentById({ paperId });
+    return await model.getDocumentById({ _id :paperId });
   },
 
   updateCollaboration: async (paperId, updateData) => {
-    return await model.updateDocument({ paperId }, updateData, { new: true });
+    return await model.updateDocument({_id : paperId }, updateData, { new: true });
   },
 
   deleteCollaboration: async (paperId) => {
-    return await model.deleteDocument({ paperId });
+    return await model.deleteDocument({ _id :paperId });
   },
 
   getCollaborationsByStudentId: async (studentId) => {
-    const filter = { "postedBy.studentId": studentId };
+    const filter = { createdBy: studentId };
     return await model.getAllDocuments(filter);
   },
 };
