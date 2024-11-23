@@ -66,6 +66,18 @@ const teacherCtrl = {
       msg: " login successful",
     });
   }),
+  verifyEmail: async (req, res, next) => {
+
+  const decodedUser = req.decodedUser;
+   const user= await TeacherService.verifyEmail(decodedUser);
+
+
+    return successResponse({
+      res,
+      data: user,
+      msg: "email verified",
+    })
+}
   
 };
 

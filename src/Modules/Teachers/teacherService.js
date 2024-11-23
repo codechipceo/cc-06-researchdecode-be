@@ -21,6 +21,16 @@ const teacherService = {
       password: hashedPassword,
     });
 
+    const teacher ={
+      _id:savedData._id,
+      firstName:savedData.firstName,
+      userType:savedData.userType
+    
+    }
+        const token = generateToken(teacher)
+
+        await sendVerificationEmail(email, token);
+
     return savedData;
   }),
 
@@ -67,6 +77,21 @@ const teacherService = {
     const token = generateToken(customer);
     return { token };
   }),
+  verifyEmail: serviceHandler(async (decodedUser) => {
+  const { _id } = decodedUser;
+
+ 
+  const query = { _id };
+  const updateData = { emailVerified: true };
+
+  const options = { new: true }; 
+  const savedUser = await model.updateDocument(query, updateData, options);
+
+  if (!savedUser) {
+    throw new Error("User not found or could not be updated");
+  }
+  return savedUser;
+}),
 };
 const TeacherService = teacherService;
 module.exports = TeacherService;
