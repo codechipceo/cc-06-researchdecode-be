@@ -58,6 +58,6 @@ const teacherSchema = new mongoose.Schema(
 );
 
 // Create the model
-const TeacherOnbording = mongoose.model("TeacherOnbording", teacherSchema);
+const TeacherOnboarding = mongoose.model("TeacherOnboarding", teacherSchema);
 
-module.exports = TeacherOnbording;  
+module.exports = TeacherOnboarding;  
