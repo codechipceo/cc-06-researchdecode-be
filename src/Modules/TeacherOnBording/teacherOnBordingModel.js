@@ -29,7 +29,7 @@ const teacherSchema = new mongoose.Schema(
       type: String,
       default: "TEACHER",
     },
-    isOnbord:{
+    isOnboard:{
       type:Boolean,
       default:false
     },

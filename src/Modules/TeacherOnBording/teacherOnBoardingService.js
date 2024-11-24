@@ -17,8 +17,6 @@ const teacherOnBordingService={
         if (!email || !password) {
           throw new Error("Email and password are required");
         }
-        console.log(data);
-        
         const hashedPassword = await hashPassword(password);
     
         const savedData = await model.save({
@@ -27,7 +25,6 @@ const teacherOnBordingService={
           password: hashedPassword,
         });
     
-        console.log(savedData);
         
     const student ={
       _id:savedData._id,
@@ -59,5 +56,5 @@ const teacherOnBordingService={
       }),
 }
 
-const TeacherServiceOnbordingService = teacherOnBordingService;
-module.exports = TeacherServiceOnbordingService;
+const TeacherServiceOnboardingService = teacherOnBordingService;
+module.exports = TeacherServiceOnboardingService;

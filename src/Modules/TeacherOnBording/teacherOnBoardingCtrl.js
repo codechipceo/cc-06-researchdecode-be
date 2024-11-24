@@ -1,18 +1,17 @@
 const CustomError = require("../../Errors/CustomError");
 const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
-const TeacherServiceOnbordingService = require("./teacherOnBordingService");
+const TeacherServiceOnboardingService = require("./teacherOnBoardingService");
 
-const teacheronbordingCtrl={
+const teacheronboardingCtrl={
     create: asyncHandler(async (req, res, next) => {
         const teacherData = req.body;
-    console.log(teacherData);
-    
-        const savedTeacher = await TeacherServiceOnbordingService.create(teacherData);
+
+        const savedTeacher = await TeacherServiceOnboardingService.create(teacherData);
         return successResponse({
           res: res,
           data: savedTeacher,
-          msg: "Student created Successfully",
+          msg: "Teacher created Successfully",
         });
       }),
 
@@ -32,4 +31,4 @@ const teacheronbordingCtrl={
     }
 }
 
-module.exports=teacheronbordingCtrl;
+module.exports=teacheronboardingCtrl;
