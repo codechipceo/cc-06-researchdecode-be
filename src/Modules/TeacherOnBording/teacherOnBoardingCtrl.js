@@ -20,7 +20,7 @@ const teacheronboardingCtrl={
         const decodedUser = req.decodedUser;
 
   
-       const user= await TeacherServiceOnbordingService.verifyEmail(decodedUser);
+       const user= await TeacherServiceOnboardingService.verifyEmail(decodedUser);
   
   
         return successResponse({
