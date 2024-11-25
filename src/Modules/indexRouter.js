@@ -16,6 +16,7 @@ const { labsRouter } = require("./Labs/labsRouter");
 const {
   collaborationRequestRouter,
 } = require("./Collaboration/collaborationRouter");
+const { teacherOnBoardingRouter } = require("./TeacherOnBording/teacherOnBoardingRoute");
 
 const adminRouter = require("express").Router();
 const userRouter = require("express").Router();
@@ -43,5 +44,5 @@ userRouter.use("/consultancy", consultancyRouter);
 userRouter.use("/courseEnrollment", verifyToken, courseEnrollmentRouter);
 userRouter.use("/labs", labsRouter);
 userRouter.use("/collaboration", collaborationRequestRouter);
-
+userRouter.use("/teacheronboarding",teacherOnBoardingRouter)
 module.exports = { adminRouter, userRouter };
