@@ -32,4 +32,41 @@ const sendVerificationEmail = async (email, token) => {
   }
 };
 
-module.exports = { sendVerificationEmail };
+
+const sendTeacherAcceptEmail=async(email)=>{
+  const templatePath = path.join(__dirname, '..', 'templates', 'accept-teacher.pug');
+  const url = `${process.env.BASE_URL}`;
+  const html = pug.renderFile(templatePath, { url });
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Email Verification",
+    html,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending email", error);
+  }
+}
+
+
+const sendTeacherRejectEmail=async(email)=>{
+  const templatePath = path.join(__dirname, '..', 'templates', 'reject-teacher.pug');
+  const html = pug.renderFile(templatePath);
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Email Verification",
+    html,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending email", error);
+  }
+}
+
+module.exports = { sendVerificationEmail,sendTeacherAcceptEmail,sendTeacherRejectEmail };

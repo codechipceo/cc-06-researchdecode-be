@@ -18,17 +18,25 @@ const teacheronboardingCtrl={
       verifyEmail: async (req, res, next) => {
 
         const decodedUser = req.decodedUser;
-
-  
        const user= await TeacherServiceOnboardingService.verifyEmail(decodedUser);
-  
   
         return successResponse({
           res,
           data: user,
           msg: "email verified",
         })
-    }
+    },
+
+    acceptOrReject: asyncHandler(async(req,res,next)=>{
+      const data=req.body
+      const user= await TeacherServiceOnboardingService.acceptOrReject(data);
+   
+       return successResponse({
+         res,
+         data: user,
+         msg: "Updated ",
+       })
+    })
 }
 
 module.exports=teacheronboardingCtrl;

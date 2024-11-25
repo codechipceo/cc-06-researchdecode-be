@@ -8,7 +8,7 @@ const {
   generateToken,
   verifyToken,
 } = require("../../Utils/utils");
-const { sendVerificationEmail } = require("../../Utils/mailer");
+const { sendVerificationEmail,sendTeacherAcceptEmail,sendTeacherRejectEmail } = require("../../Utils/mailer");
 const model = new DbService(TeacherOnbording);
 
 const teacherOnBordingService={
@@ -54,6 +54,21 @@ const teacherOnBordingService={
         }
         return savedUser;
       }),
+      acceptOrReject:serviceHandler(async(data)=>{
+        const {_id,accept}=data;
+
+        const query={_id}
+        const updateDate={isOnboard:accept}
+        const options={new:true}
+
+        const savedUser=await model.updateDocument(query,updateDate,options);
+
+        if (!savedUser) {
+          throw new Error("teacher not found or could not be updated");
+        }
+savedUser.isOnboard===true? await sendTeacherAcceptEmail(savedUser.email) :await sendTeacherRejectEmail(savedUser.email)
+        return savedUser;
+      })
 }
 
 const TeacherServiceOnboardingService = teacherOnBordingService;
