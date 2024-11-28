@@ -44,6 +44,12 @@ const consultancyCtrl = {
     const result=await consultancyService.endConsultancy(data);
     return successResponse({res:res,data:result});
   }),
+  activeOrInactiveConsultancy:asyncHandler(async(req,res,next)=>{
+    const data=req.body;
+    
+    const result=await consultancyService.activeOrInactiveConsultancy(data);
+    return successResponse({res:res,data:result});
+  })
 };
 
 module.exports = consultancyCtrl;
