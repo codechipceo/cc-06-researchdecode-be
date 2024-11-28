@@ -31,6 +31,12 @@ html
         line-height: 1.5;
         margin-bottom: 20px;
       }
+      .credentials {
+        font-size: 16px;
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
       .btn {
         display: inline-block;
         padding: 12px 24px;
@@ -54,5 +60,9 @@ html
     div.container
       h1.header Congratulations!
       p.message We are thrilled to inform you that you have been accepted to Research Decode. Welcome!
-      a.btn(href=url target="_blank") Click Here
+      div.credentials
+        p Your login credentials are as follows:
+        p Email: #{email}
+        p Password: #{password}
+      a.btn(href=url target="_blank") Click Here to Log In
       p.footer If you have any questions, feel free to contact our support team. We’re here to help.

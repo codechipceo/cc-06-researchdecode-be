@@ -3,16 +3,12 @@ const mongoose = require("mongoose");
 // Define the schema
 const teacherSchema = new mongoose.Schema(
   {
-    firstName: {
+    teachername: {
       type: String,
       required: true,
       trim: true,
     },
-    lastName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    
     email: {
       type: String,
       required: true,
@@ -33,17 +29,26 @@ const teacherSchema = new mongoose.Schema(
       type:Boolean,
       default:false
     },
-    password: {
+    profileImage:{
+      type: String,
+      required: false,
+    },
+    aboutTeacher:{
+      type:String,
+      required:true
+    },
+    qualification: {
       type: String,
       required: true,
-      minlength: 6,
+      trim: true,
     },
-    phoneNumber: {
+   contactNumber: {
       type: String,
       required: true,
     },
     experience: {
-      type: String,
+      type: Number,
+      required: true,
     },
     role:{
       type:String,

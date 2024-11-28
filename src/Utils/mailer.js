@@ -33,14 +33,16 @@ const sendVerificationEmail = async (email, token) => {
 };
 
 
-const sendTeacherAcceptEmail=async(email)=>{
+const sendTeacherAcceptEmail = async (email, password) => {
   const templatePath = path.join(__dirname, '..', 'templates', 'accept-teacher.pug');
   const url = `${process.env.BASE_URL}`;
-  const html = pug.renderFile(templatePath, { url });
+
+  const html = pug.renderFile(templatePath, { email, password, url });
+
   const mailOptions = {
     from: process.env.EMAIL,
     to: email,
-    subject: "Email Verification",
+    subject: "Congratulations! You're Accepted at Research Decode",
     html,
   };
 
@@ -49,8 +51,7 @@ const sendTeacherAcceptEmail=async(email)=>{
   } catch (error) {
     console.error("Error sending email", error);
   }
-}
-
+};
 
 const sendTeacherRejectEmail=async(email)=>{
   const templatePath = path.join(__dirname, '..', 'templates', 'reject-teacher.pug');
