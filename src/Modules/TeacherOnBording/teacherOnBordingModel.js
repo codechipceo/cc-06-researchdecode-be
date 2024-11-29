@@ -20,23 +20,11 @@ const teacherSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-
-    emailVerified: {
-      type: Boolean,
-      default: false,
-    },
-    userType: {
+    onboardingStatus: {
       type: String,
-      default: "TEACHER",
-    },
-    isOnboard:{
-      type:Boolean,
-      default:false
-    },
-    password: {
-      type: String,
+      enum: ["approved", "rejected","pending"],
       required: true,
-      minlength: 6,
+      default: "pending",
     },
     phoneNumber: {
       type: String,
@@ -44,10 +32,6 @@ const teacherSchema = new mongoose.Schema(
     },
     experience: {
       type: String,
-    },
-    role:{
-      type:String,
-      default:"TEACHER"
     },
     isActive: {
       type: Boolean,
@@ -60,4 +44,4 @@ const teacherSchema = new mongoose.Schema(
 // Create the model
 const TeacherOnboarding = mongoose.model("TeacherOnboarding", teacherSchema);
 
-module.exports = TeacherOnboarding;  
+module.exports = TeacherOnboarding;

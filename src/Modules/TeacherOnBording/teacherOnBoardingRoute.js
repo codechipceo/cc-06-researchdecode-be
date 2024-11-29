@@ -3,8 +3,10 @@ const  teacheronboardingCtrl= require('./teacherOnBoardingCtrl')
 
 const router = require('express').Router();
 
-router.post("/create" , teacheronboardingCtrl.create)
-router.post("/verify",verifyToken, teacheronboardingCtrl.verifyEmail);
+router.post("/submitRequest", teacheronboardingCtrl.submitRequest);
+router.post("/getPendingOnboardingRequests", teacheronboardingCtrl.getPendingOnboardingRequests)
+router.post("/approveOnboarding", teacheronboardingCtrl.approveOnboardingRequest);
+// router.post("/rejectOnboarding", teacheronboardingCtrl.rejectOnboardingRequest);
 
 
 const teacherOnBoardingRouter = router

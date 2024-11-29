@@ -73,6 +73,40 @@ const checkAccess = (requiredPermissions) => {
   };
 };
 
+
+function generatePassword(
+  length = 12,
+  options = {
+    includeUppercase: true,
+    includeLowercase: true,
+    includeNumbers: true,
+    includeSymbols: true,
+  }
+) {
+  const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lowercase = "abcdefghijklmnopqrstuvwxyz";
+  const numbers = "0123456789";
+  const symbols = "!@#$%^&*()_+[]{}|;:,.<>?";
+
+  let characters = "";
+  if (options.includeUppercase) characters += uppercase;
+  if (options.includeLowercase) characters += lowercase;
+  if (options.includeNumbers) characters += numbers;
+  if (options.includeSymbols) characters += symbols;
+
+  if (!characters.length) {
+    throw new Error("At least one character set must be selected.");
+  }
+
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    password += characters[randomIndex];
+  }
+  return password;
+}
+
+
 module.exports = {
   hashPassword,
   comparePasswords,
@@ -80,4 +114,5 @@ module.exports = {
   verifyToken,
   checkAccess,
   generateAdminToken,
+  generatePassword,
 };

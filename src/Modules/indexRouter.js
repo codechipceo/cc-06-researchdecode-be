@@ -32,6 +32,7 @@ adminRouter.use("/assignment", assignmentRouter);
 adminRouter.use("/consultancyCard", consultancyCardRouter);
 adminRouter.use("/consultancy", consultancyRouter);
 adminRouter.use("/labs", labsRouter);
+adminRouter.use("/teacheronboarding", teacherOnBoardingRouter);
 // USER ROUTES
 userRouter.use("/paperRequest", paperRequestRouter);
 userRouter.use("/student", studentRouter);
