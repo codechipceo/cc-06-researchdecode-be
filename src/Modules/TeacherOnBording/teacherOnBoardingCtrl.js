@@ -3,32 +3,41 @@ const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
 const TeacherServiceOnboardingService = require("./teacherOnBoardingService");
 
-const teacheronboardingCtrl={
-    create: asyncHandler(async (req, res, next) => {
-        const teacherData = req.body;
+const teacheronboardingCtrl = {
+  submitRequest: asyncHandler(async (req, res, next) => {
+    const teacherData = req.body;
 
-        const savedTeacher = await TeacherServiceOnboardingService.create(teacherData);
-        return successResponse({
-          res: res,
-          data: savedTeacher,
-          msg: "Teacher created Successfully",
-        });
-      }),
+    const savedTeacher = await TeacherServiceOnboardingService.submitRequest(
+      teacherData
+    );
+    return successResponse({
+      res: res,
+      data: savedTeacher,
+      msg: "Teacher created Successfully",
+    });
+  }),
 
-      verifyEmail: async (req, res, next) => {
+  getPendingOnboardingRequests: asyncHandler(async (req, res, next) => {
+    const reqDto = req.body;
+    const { result, pendingCount } =
+      await TeacherServiceOnboardingService.getPendingRequests(reqDto);
+    return successResponse({
+      res: res,
+      data: result,
+      msg: "Pending onboarding requests fetched successfully",
+      count: pendingCount,
+    });
+  }),
 
-        const decodedUser = req.decodedUser;
+  approveOnboardingRequest: asyncHandler(async (req, res, next) => {
+    const reqDto = req.body
+    const approvedTeacher = await TeacherServiceOnboardingService.approveOnboarding(reqDto)
+    return successResponse({
+      res: res,
+      data: approvedTeacher,
+      msg: "Onboarding request approved successfully",
+    });
+  })
+};
 
-  
-       const user= await TeacherServiceOnboardingService.verifyEmail(decodedUser);
-  
-  
-        return successResponse({
-          res,
-          data: user,
-          msg: "email verified",
-        })
-    }
-}
-
-module.exports=teacheronboardingCtrl;
+module.exports = teacheronboardingCtrl;

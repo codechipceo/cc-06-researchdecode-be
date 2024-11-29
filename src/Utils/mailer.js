@@ -32,4 +32,37 @@ const sendVerificationEmail = async (email, token) => {
   }
 };
 
-module.exports = { sendVerificationEmail };
+const sendCustomEmail = async (email, templateName, subject, data = {}) => {
+  const templatePath = path.join(
+    __dirname,
+    "..",
+    "templates",
+    `${templateName}.pug`
+  );
+
+  let html;
+  try {
+    html = pug.renderFile(templatePath, data);
+  } catch (error) {
+    console.error("Error rendering Pug template:", error);
+    return;
+  }
+
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject,
+    html,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Email sent to ${email} successfully.`);
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw new Error(`Error sending email`)
+  }
+};
+
+
+module.exports = { sendVerificationEmail, sendCustomEmail };
