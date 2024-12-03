@@ -21,6 +21,20 @@ const chatCtrl = {
 
     return successResponse({ data: savedMessage, msg: "Message sent", res });
   }),
+
+
+   getAll: asyncHandler(async (req, res, next) => {
+    const courseDto = req.body;
+    const { savedData, totalCount } = await chatService.getAll(courseDto);
+    return successResponse({
+      res,
+      data: savedData,
+      count: totalCount,
+      msg: "All Courses",
+    });
+  }),
+
+
   getChatHistory: asyncHandler(async (req, res, next) => {
     const { senderId, recipientId } = req.body;
     const chatHistory = await chatService.getChatHistory(senderId, recipientId);
@@ -30,6 +44,37 @@ const chatCtrl = {
       res,
     });
   }),
+
+  getById: asyncHandler(async (req, res, next) => {
+    const courseId = req.body;
+    const courseById = await courseService.getById(courseId);
+    return successResponse({ res, data: courseById, msg: "Course By Id" });
+  }),
+  inbox: asyncHandler(async (req, res, next) => {
+    const inbox = await chatService.getInbox(req.body);
+    return successResponse({ data: inbox, res, msg: "Teacher Inbox" });
+  }),
+
+   update: asyncHandler(async (req, res, next) => {
+    const courseDto = req.body;
+    const updatedCourse = await courseService.update(courseDto);
+    return successResponse({
+      res,
+      data: updatedCourse,
+      msg: "Updated Course successfully",
+    });
+  }),
+
+  delete: asyncHandler(async (req, res, next) => {
+    const courseId = req.body;
+    const deletedDoc = await courseService.delete(courseId);
+    return successResponse({
+      res,
+      data: deletedDoc,
+      msg: "Course Deleted Successfully",
+    });
+  }),
 };
+
 
 module.exports = { chatCtrl };

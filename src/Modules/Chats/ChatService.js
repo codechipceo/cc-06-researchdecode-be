@@ -19,6 +19,78 @@ const chatService = {
     };
     return await model.getAllDocuments(query);
   }),
+
+
+   getInbox: serviceHandler(async (data) => {
+    const { decodedUser } = data ?? {};
+    const pipeline = [
+      {
+        // Match records where the teacher is the recipient and the sender is a student
+        $match: {
+          recipient: new ObjectId(decodedUser?._id),
+          recipientModel: "Profile",
+          senderModel: "Student",
+        },
+      },
+      {
+        $group: {
+          _id: "$sender", // Group by sender ID (Student ID)
+        },
+      },
+      {
+        $lookup: {
+          from: "students",
+          localField: "_id",
+          foreignField: "_id",
+          as: "studentDetails",
+        },
+      },
+      {
+        $unwind: "$studentDetails",
+      },
+      {
+        // Project to flatten the studentDetails object fields to the top level
+        $project: {
+          _id: 1,
+          firstName: "$studentDetails.firstName",
+          lastName: "$studentDetails.lastName",
+          email: "$studentDetails.email",
+          emailVerified: "$studentDetails.emailVerified",
+          isActive: "$studentDetails.isActive",
+          points: "$studentDetails.points",
+        },
+      },
+    ];
+
+
+    
+    const inbox = await model.aggregatePipeline(pipeline);
+
+    return inbox;
+  }),
+
+  getById: serviceHandler(async (data) => {
+    const { chatId } = data;
+    const query = { isDelete: false, _id: chatId };
+    const savedDataById = await model.getDocumentById(query);
+    return savedDataById;
+  }),
+  update: serviceHandler(async (updateData) => {
+    const { chatId } = updateData;
+    const filter = { _id: chatId };
+    const updatePayload = { ...updateData };
+    const updatedDoc = await model.updateDocument(filter, updatePayload);
+    return updatedDoc;
+  }),
+  delete: serviceHandler(async (deleteId) => {
+    const { chatId } = deleteId;
+    const deletedDoc = await model.updateDocument(
+      { _id: chatId },
+      { isDelete: true }
+    );
+    return deletedDoc;
+  }),
+
 };
 
 module.exports = { chatService };
