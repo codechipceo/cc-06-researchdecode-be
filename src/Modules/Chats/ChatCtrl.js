@@ -36,8 +36,10 @@ const chatCtrl = {
 
 
   getChatHistory: asyncHandler(async (req, res, next) => {
-    const { senderId, recipientId } = req.body;
-    const chatHistory = await chatService.getChatHistory(senderId, recipientId);
+    const courseDto = req.body;
+    console.log(courseDto);
+    
+    const chatHistory = await chatService.getChatHistory(courseDto);
     return successResponse({
       data: chatHistory,
       msg: "Chat history retrieved",
@@ -52,7 +54,7 @@ const chatCtrl = {
   }),
   inbox: asyncHandler(async (req, res, next) => {
     const inbox = await chatService.getInbox(req.body);
-    return successResponse({ data: inbox, res, msg: "Teacher Inbox" });
+    return successResponse({ data: inbox, res, msg: "User Inbox" });
   }),
 
    update: asyncHandler(async (req, res, next) => {
