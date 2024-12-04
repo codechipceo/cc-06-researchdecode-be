@@ -5,7 +5,15 @@ const { io } = require("../Sockets/socket"); // Import the io instance
 
 const chatCtrl = {
   sendMessage: asyncHandler(async (req, res, next) => {
-    const { sender, recipient, content, senderModel, recipientModel } =
+
+    // console.log(req)
+
+    // const sender = req.decodedUser._id;
+    // const senderModel =  req.decodedUser.userType == 'USER' ? 'Student' : 'Profile';
+
+    // console.log(sender , senderModel);
+    
+    const {sender,senderModel , recipient, content, recipientModel } =
       req.body;
 
     const messageData = {
@@ -17,7 +25,7 @@ const chatCtrl = {
     };
     const savedMessage = await chatService.createChats(messageData);
 
-    io.to(recipient).emit("message", savedMessage);
+    // io.to(recipient).emit("message", savedMessage);
 
     return successResponse({ data: savedMessage, msg: "Message sent", res });
   }),
@@ -37,7 +45,7 @@ const chatCtrl = {
 
   getChatHistory: asyncHandler(async (req, res, next) => {
     const courseDto = req.body;
-    console.log(courseDto);
+    // console.log(courseDto);
     
     const chatHistory = await chatService.getChatHistory(courseDto);
     return successResponse({

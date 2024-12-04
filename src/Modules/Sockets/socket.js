@@ -13,11 +13,11 @@ const conSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("A new client connected", socket.id);
+    // console.log("A new client connected", socket.id);
 
     // Track total connected clients
     const clientsCount = io.sockets.sockets.size;
-    console.log(`Total connected clients: ${clientsCount}`);
+    // console.log(`Total connected clients: ${clientsCount}`);
 
     // Join a room
     socket.on("joinRoom", (roomId) => {
@@ -32,6 +32,8 @@ const conSocket = (server) => {
 
       // Chat event handling
       socket.on("chat", async (params) => {
+        console.log(params);
+        
         const { sender, recipient, content, senderModel, recipientModel } = params;
         const messageData = {
           sender,
@@ -40,10 +42,11 @@ const conSocket = (server) => {
           recipientModel,
           content,
         };
+         console.log(`Message sent in room ${roomId} by ${sender}: ${content}`);
 
         await chatService.createChats(messageData);
         io.to(roomId).emit("message", messageData);
-        console.log(`Message sent in room ${roomId} by ${sender}: ${content}`);
+        // console.log(`Message sent in room ${roomId} by ${sender}: ${content}`);
       });
     });
 

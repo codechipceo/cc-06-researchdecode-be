@@ -7,6 +7,7 @@ const model = new DatabaseService(Chats);
 const Student = require('../Students/studentModel');
 const Teacher = require("../Teachers/teacherModel");
 const chatService = {
+  
   createChats: serviceHandler(async (data) => {
     return await model.save(data);
   }),
@@ -18,7 +19,7 @@ const chatService = {
     const { decodedUser } = data ?? {};
     const senderId = decodedUser._id;
 
-     console.log(senderId);
+    //  console.log(senderId);
     const query = {
       $or: [
         { sender: senderId, recipient: data.recipientId },
@@ -56,7 +57,7 @@ getInbox: serviceHandler(async (data) => {
     }
   });
 
-  console.log(participantIds);
+  // console.log(participantIds);
   
 
   

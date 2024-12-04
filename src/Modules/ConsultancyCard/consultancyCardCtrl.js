@@ -23,7 +23,7 @@ const consultancyCardCtrl = {
 
   getUserConsultancyCard: asyncHandler(async (req, res, next) => {
     const teacherId = req.body.decodedUser._id; // Assuming user ID is stored in req.user
-    console.log(teacherId);
+    // console.log(teacherId);
 
     const response = await consultancyCardService.getUserConsultancyCard(
       teacherId
