@@ -11,6 +11,11 @@ const webinarSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  WebinarBanner:{
+    type: String,
+    required: true,
+    trim: true
+  },
   webinarDate: {
     type: String,
     required: true,
