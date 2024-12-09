@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
 const webinarSchema = new mongoose.Schema({
-  webinarCreator: {
+  createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "profile",
-    require: true
+    ref: "Profiles",
+    required: true,
   },
   webinarTitle: {
     type: String,
@@ -48,25 +48,20 @@ const webinarSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  isActive: {
+    type: Boolean,
+    default: false,
+  },
+  isDelete: {
+    type: Boolean,
+    default: false,
+  },
+},{
+  timestamps: true
 });
 
-const webinarRegistration = new mongoose.Schema({
-  webinarId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref:"Webinar",
-    require: true,
-  },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Student",
-    require: true,
-  },
-});
+
 
 const WebinarModel = new mongoose.model("Webinar", webinarSchema);
-const WebinarRegistrationModel = new mongoose.model(
-  "WebinarRegistration",
-  webinarRegistration
-);
 
-module.exports = { WebinarModel, WebinarRegistrationModel };
+module.exports = WebinarModel;

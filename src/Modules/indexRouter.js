@@ -17,6 +17,8 @@ const {
   collaborationRequestRouter,
 } = require("./Collaboration/collaborationRouter");
 const { teacherOnBoardingRouter } = require("./TeacherOnBording/teacherOnBoardingRoute");
+const { webinarRouter } = require("./Webinars/webinarRouter");
+const webinarEnrollmentRouter = require("./WebinarEnrollment/webinarEnrollmentRouter");
 
 const adminRouter = require("express").Router();
 const userRouter = require("express").Router();
@@ -33,6 +35,9 @@ adminRouter.use("/consultancyCard", consultancyCardRouter);
 adminRouter.use("/consultancy", consultancyRouter);
 adminRouter.use("/labs", labsRouter);
 adminRouter.use("/teacheronboarding", teacherOnBoardingRouter);
+adminRouter.use("/webinar",verifyToken, webinarRouter);
+adminRouter.use("/webinarEnrollment",verifyToken, webinarEnrollmentRouter);
+
 // USER ROUTES
 userRouter.use("/paperRequest", paperRequestRouter);
 userRouter.use("/student", studentRouter);
