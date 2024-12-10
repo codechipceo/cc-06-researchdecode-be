@@ -69,6 +69,7 @@ const consultancyService = {
     ];
     return await model.getDocumentById(query, populateOptions);
   }),
+
   verifyPayment: serviceHandler(async (data) => {
     const {
       razorpay_payment_id,
@@ -82,7 +83,7 @@ const consultancyService = {
       razorpay_signature
     );
 
-    if (isSignatureVerified === false) {
+    if (!isSignatureVerified) {
       throw new CustomError(400, "Payment Not Verified");
     } else {
       const getConsultancy = await model.getDocumentById({
@@ -126,7 +127,6 @@ const consultancyService = {
     };
 
     const isScheduled = await model.getDocumentById(query);
-    console.log(isScheduled);
     return isScheduled;
   }),
 
@@ -152,8 +152,6 @@ const consultancyService = {
 
     await model.save(matchingDocument);
 
-    // console.log("Updated Document:", matchingDocument);
-
     return matchingDocument;
   }),
 
@@ -170,8 +168,9 @@ const consultancyService = {
     if (!consultancy) {
       throw new Error("No matching document found.");
     }
+
     if (consultancy.type === "single") {
-      return consultancy.status === "inProgress"? true : false;
+      return consultancy.status === "inProgress" ? true : false;
     } else if (consultancy.scheduledDate) {
       const currentDate = new Date();
       const scheduledDate = new Date(consultancy.scheduledDate);
