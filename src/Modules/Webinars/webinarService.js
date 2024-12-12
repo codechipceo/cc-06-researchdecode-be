@@ -9,7 +9,6 @@ const webinarService = {
   }),
 
   getAll: serviceHandler(async (data) => {
-    console.log(data)
     const role = data.userRole;
     const query = { isDeleted: false };
     if (role === "TEACHER") {

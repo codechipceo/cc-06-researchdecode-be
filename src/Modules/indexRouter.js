@@ -36,7 +36,6 @@ adminRouter.use("/consultancy", consultancyRouter);
 adminRouter.use("/labs", labsRouter);
 adminRouter.use("/teacheronboarding", teacherOnBoardingRouter);
 adminRouter.use("/webinar",verifyToken, webinarRouter);
-adminRouter.use("/webinarEnrollment",verifyToken, webinarEnrollmentRouter);
 
 // USER ROUTES
 userRouter.use("/paperRequest", paperRequestRouter);
@@ -50,5 +49,7 @@ userRouter.use("/consultancy", consultancyRouter);
 userRouter.use("/courseEnrollment", verifyToken, courseEnrollmentRouter);
 userRouter.use("/labs", labsRouter);
 userRouter.use("/collaboration", collaborationRequestRouter);
-userRouter.use("/teacheronboarding",teacherOnBoardingRouter)
+userRouter.use("/teacheronboarding",teacherOnBoardingRouter);
+userRouter.use("/webinarEnrollment",verifyToken, webinarEnrollmentRouter);
+
 module.exports = { adminRouter, userRouter };
