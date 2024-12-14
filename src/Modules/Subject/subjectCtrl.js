@@ -2,25 +2,36 @@ const CustomError = require("../../Errors/CustomError");
 const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
 const SubjectService = require("./subjectService");
+const { validationResult } = require("express-validator");
+const subjectvalidatormiddleware = require("../../middlewares/validation/subjectSchemavalidator");
 
 const subjectCtrl = {
-  create: asyncHandler(async (req, res, next) => {
-    const subjectDTO = req.body;
+  create: [
+    subjectvalidatormiddleware,
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        console.log(errors.errors);
+        
+        return res
+          .json({ msg:  errors.errors});
+      } else {
+        const subjectDTO = req.body;
 
-    const savedSubject = await SubjectService.create(subjectDTO);
+        const savedSubject = await SubjectService.create(subjectDTO);
 
-    return successResponse({
-      res: res,
-      data: savedSubject,
-      msg: "Subject created Successfully",
-    });
-  }),
+        return successResponse({
+          res: res,
+          data: savedSubject,
+          msg: "Subject created Successfully",
+        });
+      }
+    }),
+  ],
 
   getAll: asyncHandler(async (req, res, next) => {
     const subjectDTO = req.body;
-    const { savedData, totalCount } = await SubjectService.getAll(
-      subjectDTO
-    );
+    const { savedData, totalCount } = await SubjectService.getAll(subjectDTO);
     return successResponse({
       res,
       data: savedData,
@@ -53,7 +64,7 @@ const subjectCtrl = {
       data: deletedDoc,
       msg: "Subject Deleted Successfully",
     });
-  })
+  }),
 };
 
 module.exports = subjectCtrl;

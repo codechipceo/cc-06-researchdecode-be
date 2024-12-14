@@ -1,22 +1,33 @@
 const asyncHandler = require("../../Utils/asyncHandler");
 const TeacherService = require("./teacherService");
 const successResponse = require("../../Utils/apiResponse");
+const teachermiddleware = require("../../middlewares/validation/teachervalidationschema");
+const { validationResult } = require("express-validator");
 
 const teacherCtrl = {
-  create: asyncHandler(async (req, res, next) => {
-    const teacherDTO = req.body;
-    let savedData;
-    if (Array.isArray(teacherDTO)) {
-      savedData = await TeacherService.createMany(teacherDTO);
-    } else {
-      savedData = await TeacherService.create(teacherDTO);
-    }
-    return successResponse({
-      res,
-      data: savedData,
-      msg: "teacher created successfully",
-    });
-  }),
+  create: [
+    teachermiddleware,
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        console.log(errors.errors);
+        return res.json({ msg: errors.errors });
+      } else {
+        const teacherDTO = req.body;
+        let savedData;
+        if (Array.isArray(teacherDTO)) {
+          savedData = await TeacherService.createMany(teacherDTO);
+        } else {
+          savedData = await TeacherService.create(teacherDTO);
+        }
+        return successResponse({
+          res,
+          data: savedData,
+          msg: "teacher created successfully",
+        });
+      }
+    }),
+  ],
 
   getAll: asyncHandler(async (req, res, next) => {
     const teacherDTO = req.body;
@@ -33,9 +44,10 @@ const teacherCtrl = {
     const teacherId = req.body;
     const teacherById = await TeacherService.getById(teacherId);
     return successResponse({
-       res, 
-       data: teacherById,
-        msg: "teacher By Id" });
+      res,
+      data: teacherById,
+      msg: "teacher By Id",
+    });
   }),
 
   update: asyncHandler(async (req, res, next) => {
@@ -58,15 +70,14 @@ const teacherCtrl = {
     });
   }),
   signIn: asyncHandler(async (req, res, next) => {
-    const { email,password } = req.body;
-    const {user,token} = await TeacherService.signIn(email,password);
+    const { email, password } = req.body;
+    const { user, token } = await TeacherService.signIn(email, password);
     return successResponse({
       res,
-      data: {user,token},
+      data: { user, token },
       msg: " login successful",
     });
   }),
-  
 };
 
 module.exports = teacherCtrl;

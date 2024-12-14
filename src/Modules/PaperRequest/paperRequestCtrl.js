@@ -1,18 +1,30 @@
 const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
 const paperRequestService = require("./paperRequestService");
+const paperrequestmiddleware = require("../../middlewares/validation/Paperrequestsvalidatorschema");
+const { validationResult } = require("express-validator");
 
 const paperRequestCtrl = {
-  create: asyncHandler(async (req, res, next) => {
-    const docDTO = req.body;
-    const newRequest = await paperRequestService.createRequestResearchPaper(
-      docDTO
-    );
+  create: [
+    paperrequestmiddleware,
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        console.log( errors.errors);
+        
+        return res
+          .json({ msg: errors.errors });
+      } else {
+        const docDTO = req.body;
+        const newRequest = await paperRequestService.createRequestResearchPaper(
+          docDTO
+        );
 
-    successResponse({ res, data: newRequest, msg: "New Request Raised" });
-  }),
+        successResponse({ res, data: newRequest, msg: "New Request Raised" });
+      }
+    }),
+  ],
   upload: asyncHandler(async (req, res, next) => {
-
     const payload = { file: req.files, ...req.body };
     const updatedRequest = await paperRequestService.uploadRequestPaper(
       payload
