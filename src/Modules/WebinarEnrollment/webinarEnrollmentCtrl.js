@@ -35,6 +35,16 @@ const webinarEnrollmentCtrl = {
       next(error);
     }
   }),
+
+  delete: asyncHandler(async(req, res, next) => {
+    const webinarEnrollmentDTO = req.body;
+    const deletedEnrollment = await WebinarEnrollmentService.delete(webinarEnrollmentDTO);
+    return successResponse({
+      res,
+      data: deletedEnrollment,
+      msg: "Unenrolled Successfully!"
+    })
+  })
 };
 
 module.exports = webinarEnrollmentCtrl;
