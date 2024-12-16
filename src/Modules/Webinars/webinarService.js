@@ -30,9 +30,9 @@ const webinarService = {
     const { _id: webinarId } = data;
     const query = { _id: webinarId };
     const savedDataById = await model.getDocumentById(query);
-    if (typeof savedDataById !== 'object' || savedDataById === null) {
-      throw new CustomError(400, "Webinar not found!");
-    }
+    // if (typeof savedDataById !== 'object' || savedDataById === null) {
+    //   throw new CustomError(400, "Webinar not found!");
+    // }
     return savedDataById;
   }),
 
