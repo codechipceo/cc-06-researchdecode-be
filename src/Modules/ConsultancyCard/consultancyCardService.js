@@ -6,7 +6,9 @@ const model = new DatabaseService(ConsultancyCard);
 
 const consultancyCardService = {
   create: serviceHandler(async (data) => {
-    return await model.save(data);
+    console.log(data)
+    const payload = { ...data, teacherId : data.createdBy}
+    return await model.save(payload);
   }),
 
   getAll: serviceHandler(async (data) => {

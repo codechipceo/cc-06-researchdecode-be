@@ -2,7 +2,7 @@ const consultancyCardCtrl = require("./consultancyCardCtrl");
 const { verifyToken } = require("../../Utils/utils");
 const consultancyCardRouter = require("express").Router();
 
-consultancyCardRouter.post("/create", consultancyCardCtrl.create);
+consultancyCardRouter.post("/create",verifyToken,  consultancyCardCtrl.create);
 consultancyCardRouter.post("/getById", consultancyCardCtrl.getById);
 consultancyCardRouter.post("/getAll", consultancyCardCtrl.getAll);
 consultancyCardRouter.post(

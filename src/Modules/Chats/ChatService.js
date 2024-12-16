@@ -1,8 +1,8 @@
 const DatabaseService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
 const Chats = require("./ChatModel");
-const mongoose = require("mongoose");
-const { ObjectId } = mongoose.Types;
+const Types = require("mongoose").Types;
+const { ObjectId } = Types;
 const model = new DatabaseService(Chats);
 const chatService = {
   createChats: serviceHandler(async (data) => {
@@ -10,45 +10,87 @@ const chatService = {
   }),
   getInbox: serviceHandler(async (data) => {
     const { decodedUser } = data ?? {};
-    const pipeline = [
+    const loggedInUserId = decodedUser._id
+
+    const returnObjectId = (id) => {
+      return new ObjectId(id)
+    }
+
+    const newPipeline = [
       {
-        // Match records where the teacher is the recipient and the sender is a student
         $match: {
-          recipient: new ObjectId(decodedUser?._id),
-          recipientModel: "Profile",
-          senderModel: "Student",
+          $or: [
+            { sender: returnObjectId(loggedInUserId) },
+            { recipient: returnObjectId(loggedInUserId) },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          otherUser: {
+            $cond: {
+              if: { $eq: ["$sender", returnObjectId(loggedInUserId)] },
+              then: "$recipient",
+              else: "$sender",
+            },
+          },
+          otherUserModel: {
+            $cond: {
+              if: { $eq: ["$sender", returnObjectId(loggedInUserId)] },
+              then: "$recipientModel",
+              else: "$senderModel",
+            },
+          },
         },
       },
       {
         $group: {
-          _id: "$sender", // Group by sender ID (Student ID)
+          _id: "$otherUser",
+          model: { $first: "$otherUserModel" },
         },
       },
       {
         $lookup: {
-          from: "students",
+          from: "students", // Replace with your actual Student collection name
           localField: "_id",
           foreignField: "_id",
           as: "studentDetails",
         },
       },
       {
-        $unwind: "$studentDetails",
-      },
-      {
-        // Project to flatten the studentDetails object fields to the top level
-        $project: {
-          _id: 1,
-          firstName: "$studentDetails.firstName",
-          lastName: "$studentDetails.lastName",
-          email: "$studentDetails.email",
-          emailVerified: "$studentDetails.emailVerified",
-          isActive: "$studentDetails.isActive",
-          points: "$studentDetails.points",
+        $lookup: {
+          from: "profiles", // Replace with your actual Profile collection name
+          localField: "_id",
+          foreignField: "_id",
+          as: "profileDetails",
         },
       },
+      {
+        $project: {
+          model: 1,
+          details: {
+            $cond: {
+              if: { $eq: ["$model", "Student"] },
+              then: {
+                _id: "$_id",
+                firstName: {$arrayElemAt :["$studentDetails.firstName", 0]},
+                lastName: { $arrayElemAt: ["$studentDetails.lastName", 0] },
+                role:"USER"
+              },
+              else: {
+                _id: "$_id",
+                name: { $arrayElemAt: ["$profileDetails.name", 0] },
+                role: { $arrayElemAt: ["$profileDetails.role", 0] },
+              },
+            },
+          },
+        },
+      },
+      {
+        $sort: { "details.name": 1 },
+      },
     ];
-    const inbox = await model.aggregatePipeline(pipeline);
+    const inbox = await model.aggregatePipeline(newPipeline);
 
     return inbox;
   }),
@@ -61,11 +103,11 @@ const chatService = {
   }),
 
   getChatOfTwoUsers: serviceHandler(async (data) => {
-    const { senderId, recepientId } = data;
+    const { recepientId, createdBy } = data;
     const query = {
       $or: [
-        { sender: senderId, recipient: recepientId },
-        { sender: recepientId, recipient: senderId },
+        { sender: createdBy, recipient: recepientId },
+        { sender: recepientId, recipient: createdBy },
       ],
     };
 

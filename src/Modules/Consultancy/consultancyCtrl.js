@@ -1,8 +1,7 @@
 const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
 const consultancyService = require("./consultancyService");
-const conssultancyService = require("./consultancyService");
-const consultancymiddleware = require("../../middlewares/validation/consultancyValidationSchema ");
+const consultancymiddleware = require("../../middlewares/validation/consultancyValidationSchema");
 const { validationResult } = require("express-validator");
 
 const consultancyCtrl = {
@@ -16,7 +15,7 @@ const consultancyCtrl = {
         return res.json({ msg: errors.errors }); //collect this in fe like if the msg is an array then that is a error other wise that is correct code
       } else {
         const docData = req.body;
-        const response = await conssultancyService.create(docData);
+        const response = await consultancyService.create(docData);
         return successResponse({
           res,
           data: response,
