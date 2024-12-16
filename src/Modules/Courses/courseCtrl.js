@@ -1,18 +1,33 @@
 const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
 const courseService = require("./courseService");
+const coursemiddleware = require("../../middlewares/validation/coursevalidationschema");
+const { validationResult } = require("express-validator");
 
 const courseCtrl = {
-  create: asyncHandler(async (req, res, next) => {
-    const courseDto = req.body;
-    courseDto.files = req.files;
-    const courseSaved = await courseService.create(courseDto);
-    return successResponse({
-      res: res,
-      data: courseSaved,
-      msg: "Course created Successfully",
-    });
-  }),
+  create: [
+    coursemiddleware,
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        console.log(errors.errors);
+        
+        return res
+          .status(400)
+          .json({ msg: errors.errors });
+      } else {
+        const courseDto = req.body;
+        courseDto.files = req.files;
+        const courseSaved = await courseService.create(courseDto);
+        return successResponse({
+          res: res,
+          data: courseSaved,
+          msg: "Course created Successfully",
+        });
+      }
+    }),
+  ],
 
   getAll: asyncHandler(async (req, res, next) => {
     const courseDto = req.body;
@@ -34,7 +49,7 @@ const courseCtrl = {
   getUserCourses: asyncHandler(async (req, res, next) => {
     const userId = req.body.decodedUser._id;
     const userCourses = await courseService.getUserCourses(userId);
-   
+
     return successResponse({
       res,
       data: userCourses,

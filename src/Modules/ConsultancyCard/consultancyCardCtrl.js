@@ -1,13 +1,28 @@
 const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
 const consultancyCardService = require("./consultancyCardService");
+const { validationResult } = require("express-validator");
+const consultancyCardmiddleware = require("../../middlewares/validation/consultancycardvalidationschema");
 
 const consultancyCardCtrl = {
-  create: asyncHandler(async (req, res, next) => {
-    const docDto = req.body;
-    const savedDoc = await consultancyCardService.create(docDto);
-    return successResponse({ res, data: savedDoc, msg: "New Card Added" });
-  }),
+  create: [
+    consultancyCardmiddleware,
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        console.log(errors.errors);
+        
+        return res
+          .status(400)
+          .json({ msg: errors.errors });
+      } else {
+        const docDto = req.body;
+        const savedDoc = await consultancyCardService.create(docDto);
+        return successResponse({ res, data: savedDoc, msg: "New Card Added" });
+      }
+    }),
+  ],
 
   getById: asyncHandler(async (req, res, next) => {
     const docData = req.body;

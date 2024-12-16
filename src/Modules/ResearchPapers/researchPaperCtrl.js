@@ -1,17 +1,29 @@
 const { researchPaperService } = require("./researchPaperService");
 const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
+const { validationResult } = require("express-validator");
+const researchPapermiddleware = require("../../middlewares/validation/researchpapervalidator");
 
 const researchPaperCtrl = {
-  create: asyncHandler(async (req, res, next) => {
-    const docDTO = req.body;
-    const savedResearchPaper = await researchPaperService.create(docDTO);
-    return successResponse({
-      res,
-      msg: "Created Successfully",
-      data: savedResearchPaper,
-    });
-  }),
+  create: [
+    researchPapermiddleware,
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        console.log(errors.errors);
+        return res
+          .json({ msg:errors.errors });
+      } else {
+        const docDTO = req.body;
+        const savedResearchPaper = await researchPaperService.create(docDTO);
+        return successResponse({
+          res,
+          msg: "Created Successfully",
+          data: savedResearchPaper,
+        });
+      }
+    }),
+  ],
 
   getAll: asyncHandler(async (req, res, next) => {
     const docDTO = req.body;
@@ -57,7 +69,6 @@ const researchPaperCtrl = {
       res,
       data: researchPaper,
       msg: "Research Paper fetched",
-      
     });
   }),
 };

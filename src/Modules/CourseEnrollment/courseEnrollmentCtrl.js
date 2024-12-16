@@ -1,20 +1,34 @@
 const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
 const courseEnrollmentService = require("./courseEnrollmentService");
+const courseenrollmentmiddleware = require("../../middlewares/validation/courseenrollmentvalidationschema");
+const {validationResult}=require("express-validator")
 
 const courseEnrollCtrl = {
-  create: asyncHandler(async (req, res, next) => {
-    const courseEnrollmentDto = req.body;
+  create: [
+    courseenrollmentmiddleware,
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
 
-    const courseEnrollment = await courseEnrollmentService.create(
-      courseEnrollmentDto
-    );
-    return successResponse({
-      res: res,
-      data: courseEnrollment,
-      msg: "Enrolled Successfully",
-    });
-  }),
+      if (!errors.isEmpty()) {
+        console.log(errors.errors);
+        
+        return res
+          .json({ msg: errors.errors});
+      } else {
+        const courseEnrollmentDto = req.body;
+
+        const courseEnrollment = await courseEnrollmentService.create(
+          courseEnrollmentDto
+        );
+        return successResponse({
+          res: res,
+          data: courseEnrollment,
+          msg: "Enrolled Successfully",
+        });
+      }
+    }),
+  ],
 
   isStudentEnrolled: asyncHandler(async (req, res, next) => {
     const courseEnrollDTO = req.body;
