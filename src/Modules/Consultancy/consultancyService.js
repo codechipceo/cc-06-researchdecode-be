@@ -2,21 +2,35 @@ const DatabaseService = require("../../Service/DbService");
 const paymentInstance = require("../../Utils/paymentGatewayUtil");
 const serviceHandler = require("../../Utils/serviceHandler");
 const Consultancy = require("./ConsultancyModel");
+const ConsultancyCardModel  = require("../ConsultancyCard/consultancyCardModel");
 const { v4: uuidv4 } = require("uuid");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const CustomError = require("../../Errors/CustomError");
 const paymentService = require("../Payment/paymentService");
 const model = new DatabaseService(Consultancy);
+const cardModel   = new DatabaseService(ConsultancyCardModel)
 const paymentGatewayInstance = require("../../Utils/paymentGatewayUtil");
 const instance = paymentGatewayInstance.getInstance();
 
 const consultancyService = {
   create: serviceHandler(async (data) => {
-    const { teacherId, studentId, cardId, type, scheduledDate, amount } = data;
+    const {  decodedUser, cardId, type, scheduledDate } = data;
     let consultancy, payment;
 
+
+    const studentId  = decodedUser._id
     try {
+
+      // if active consultancy for this card exists, then reject the request
+      const isActive  = await model.getDocument({cardId : cardId, studentId : studentId, isScheduled : true})
+
+      if (isActive?.isScheduled) throw new CustomError(400,"Consultancy Is Already Active")
+      const consultancyCard = await cardModel.getDocumentById({ _id: cardId });
+    const { teacherId, pricing } = consultancyCard;
+
+    const amount =
+      type.toLowerCase() === "single" ? pricing.single : pricing.project;
       const options = {
         amount: amount * 100,
         currency: "INR",
@@ -117,24 +131,24 @@ const consultancyService = {
   }),
 
   verifyConsultancy: serviceHandler(async (data) => {
-    const { consultancyCardId, supervisorId, decodedUser } = data;
+    const { consultancyCardId, decodedUser } = data;
 
     const query = {
-      teacherId: supervisorId,
       cardId: consultancyCardId,
       studentId: decodedUser._id,
       status: "inProgress",
+      isScheduled: true,
     };
 
     const isScheduled = await model.getDocumentById(query);
-    return isScheduled;
+    if (!isScheduled) { return false}
+    return isScheduled.isScheduled;
   }),
 
   endConsultancy: serviceHandler(async (data) => {
-    const { consultancyCardId, supervisorId, decodedUser } = data;
+    const { consultancyCardId,  decodedUser } = data;
 
     const query = {
-      teacherId: supervisorId,
       cardId: consultancyCardId,
       studentId: decodedUser._id,
       status: "inProgress",
@@ -143,12 +157,13 @@ const consultancyService = {
     const matchingDocument = await model.getDocumentById(query);
 
     if (!matchingDocument) {
-      throw new Error(
+      throw new CustomError(400,
         "No matching document found. The consultancy may not exist or the status may not be 'inProgress'."
       );
     }
 
     matchingDocument.status = "completed";
+    matchingDocument.isScheduled = false;
 
     await model.save(matchingDocument);
 

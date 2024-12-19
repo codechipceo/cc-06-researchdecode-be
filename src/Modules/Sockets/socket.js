@@ -5,7 +5,10 @@ const corsOptions = {
   methods: ["GET", "POST"],
   credentials: false,
 };
+
+const onlineUsers = new Map();
 const conSocket = (server) => {
+  console.log(`Scoekt is running on port ${server.address().port}`)
   const io = socketIo(server, {
     cors: corsOptions, // Apply CORS configuration
   });
@@ -23,6 +26,12 @@ const conSocket = (server) => {
         console.log(params);
       });
     });
+
+    socket.on("online", (teacherId) => {
+      console.log(teacherId);
+      onlineUsers.set(teacherId, socket.id);
+      console.log(onlineUsers.size)
+    })
 
 
     socket.on("chat", async (params) => {

@@ -41,11 +41,6 @@ const consultancyCtrl = {
     return successResponse({ res, data: result });
   }),
 
-  validateConsultancy: asyncHandler(async (req, res, next) => {
-    const data = req.body;
-    const result = await consultancyService.validateConsultancy(data);
-    return successResponse({ res, data: result });
-  }),
 
   endConsultancy: asyncHandler(async (req, res, next) => {
     const data = req.body;
