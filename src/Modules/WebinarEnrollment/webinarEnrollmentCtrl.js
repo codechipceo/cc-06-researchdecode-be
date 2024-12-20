@@ -18,6 +18,33 @@ const webinarEnrollmentCtrl = {
       next(error);
     }
   }),
+
+  getById: asyncHandler(async (req, res, next) => {
+    try {
+      const webinarEnrollmentDTO = req.body;
+      const savedEnrollment = await WebinarEnrollmentService.getById(
+        webinarEnrollmentDTO
+      );
+
+      return successResponse({
+        res,
+        data: savedEnrollment,
+        msg: "Enrollments fetched successfully!",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }),
+
+  delete: asyncHandler(async(req, res, next) => {
+    const webinarEnrollmentDTO = req.body;
+    const deletedEnrollment = await WebinarEnrollmentService.delete(webinarEnrollmentDTO);
+    return successResponse({
+      res,
+      data: deletedEnrollment,
+      msg: "Unenrolled Successfully!"
+    })
+  })
 };
 
 module.exports = webinarEnrollmentCtrl;
