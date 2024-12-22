@@ -22,6 +22,7 @@ const webinarEnrollmentCtrl = {
   getById: asyncHandler(async (req, res, next) => {
     try {
       const webinarEnrollmentDTO = req.body;
+      
       const savedEnrollment = await WebinarEnrollmentService.getById(
         webinarEnrollmentDTO
       );
@@ -36,8 +37,27 @@ const webinarEnrollmentCtrl = {
     }
   }),
 
+  isEnroll: asyncHandler(async (req, res, next) => {
+    try {
+        const webinarEnrollmentDTO = req.body;
+        // console.log("DTO received for isEnroll:", webinarEnrollmentDTO);
+        
+        const isEnrolled = await WebinarEnrollmentService.isEnrolled(webinarEnrollmentDTO);
+
+        return successResponse({
+          res,
+          data: isEnrolled,
+          msg: "data fetched successfully!",
+        });
+    } catch (error) {
+        next(error);
+    }
+}),
+
+
   delete: asyncHandler(async(req, res, next) => {
     const webinarEnrollmentDTO = req.body;
+    
     const deletedEnrollment = await WebinarEnrollmentService.delete(webinarEnrollmentDTO);
     return successResponse({
       res,

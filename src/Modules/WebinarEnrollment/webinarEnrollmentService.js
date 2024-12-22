@@ -1,3 +1,4 @@
+
 const dbService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
 const webinarEnrollmentModel = require("./webinarEnrollmentModel");
@@ -10,6 +11,7 @@ const webinarEnrollmentService = {
             webinarId,
             studentId
         }
+        
         return await model.save(data);
     }),
 
@@ -20,8 +22,25 @@ const webinarEnrollmentService = {
         return savedDataById;
     }),
 
+
+   isEnrolled: serviceHandler(async (data) => {
+    const { 
+        webinarId, 
+        decodedUser: { _id: studentId } 
+    } = data;
+    
+    const query = {
+        webinarId,
+        studentId
+    };
+
+    const findEnrollment = await model.getDocument(query);
+
+    return !!findEnrollment; // Returns true if the document exists, false otherwise
+}),
+
     delete: serviceHandler(async (data) => {
-        const {_id: webinarId, decodedUser:{_id: studentId} } = data;
+        const { webinarId, decodedUser:{_id: studentId} } = data;
         const query = { webinarId, studentId };
         const deletedDocDetails = await model.getDocumentById(query);
         const deletedDoc = await model.deleteDocument({ studentId, webinarId });
