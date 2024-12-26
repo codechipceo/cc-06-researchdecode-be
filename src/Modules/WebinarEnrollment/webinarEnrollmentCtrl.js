@@ -19,14 +19,13 @@ const webinarEnrollmentCtrl = {
     }
   }),
 
-  getById: asyncHandler(async (req, res, next) => {
+  allEnrolledWebinars: asyncHandler(async (req, res, next) => {
     try {
       const webinarEnrollmentDTO = req.body;
       
-      const savedEnrollment = await WebinarEnrollmentService.getById(
+      const savedEnrollment = await WebinarEnrollmentService.allEnrolledWebinars(
         webinarEnrollmentDTO
       );
-
       return successResponse({
         res,
         data: savedEnrollment,

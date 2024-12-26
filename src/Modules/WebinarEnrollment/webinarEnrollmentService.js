@@ -2,8 +2,9 @@
 const dbService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
 const webinarEnrollmentModel = require("./webinarEnrollmentModel");
+const webinar= require("../Webinars/webinarModel");
 const model = new dbService(webinarEnrollmentModel)
-
+const webinarModel=new dbService(webinar)
 const webinarEnrollmentService = {
     create: serviceHandler(async (data) => {
         const { _id: webinarId, decodedUser: { _id: studentId } } = data;
@@ -15,12 +16,28 @@ const webinarEnrollmentService = {
         return await model.save(data);
     }),
 
-    getById: serviceHandler(async (data) => {
-        const { _id: studentId } = data.decodedUser;
-        const query = {studentId:studentId};
-        const savedDataById = await model.getAllDocuments(query);
-        return savedDataById;
-    }),
+   allEnrolledWebinars: serviceHandler(async (data) => {
+    const { _id: studentId } = data.decodedUser;
+    const { search } = data;
+
+    const enrollmentQuery = { studentId };
+    const savedDataById = await model.getAllDocuments(enrollmentQuery);
+
+    if (!savedDataById.length) {
+        return []; 
+    }
+
+    const webinarIds = savedDataById.map((enrollment) => enrollment.webinarId);
+
+    const webinarQuery = { _id: { $in: webinarIds } };
+
+    if (search) {
+        webinarQuery.webinarTitle = { $regex: search, $options: "i" };
+    }
+    const webinarDetails = await webinarModel.getAllDocuments(webinarQuery);
+
+    return webinarDetails;
+}),
 
 
    isEnrolled: serviceHandler(async (data) => {
@@ -36,7 +53,7 @@ const webinarEnrollmentService = {
 
     const findEnrollment = await model.getDocument(query);
 
-    return !!findEnrollment; // Returns true if the document exists, false otherwise
+    return !!findEnrollment;
 }),
 
     delete: serviceHandler(async (data) => {
