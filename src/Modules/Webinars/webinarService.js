@@ -20,7 +20,7 @@ const webinarService = {
       query.webinarTitle = { $regex: search, $options: "i" };
     }
 
-    const savedData = await model.getAllDocuments(query, data);
+    const savedData = await model.getAllDocuments(query);
     const totalCount = await model.totalCounts({ isDelete: false });
 
     return { savedData, totalCount };
