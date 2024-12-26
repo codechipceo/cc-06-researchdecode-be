@@ -2,7 +2,7 @@ module.exports = class DatabaseService {
   constructor(dbSchema) {
     this.model = dbSchema;
   }
-
+ 
   async save(data) {
     const savedData = await this.model.create(data);
     return savedData;
@@ -78,7 +78,7 @@ module.exports = class DatabaseService {
   };
 
   deleteDocument = async (data) => {
-    const deletedDocument = await this.model.delete(data);
+    const deletedDocument = await this.model.deleteOne(data);
     return deletedDocument;
   };
 

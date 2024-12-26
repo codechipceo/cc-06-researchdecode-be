@@ -69,6 +69,7 @@ const consultancyService = {
     ];
     return await model.getDocumentById(query, populateOptions);
   }),
+
   verifyPayment: serviceHandler(async (data) => {
     const {
       razorpay_payment_id,
@@ -82,7 +83,7 @@ const consultancyService = {
       razorpay_signature
     );
 
-    if (isSignatureVerified === false) {
+    if (!isSignatureVerified) {
       throw new CustomError(400, "Payment Not Verified");
     } else {
       const getConsultancy = await model.getDocumentById({
@@ -118,7 +119,6 @@ const consultancyService = {
   verifyConsultancy: serviceHandler(async (data) => {
     const { consultancyCardId, supervisorId, decodedUser } = data;
 
-
     const query = {
       teacherId: supervisorId,
       cardId: consultancyCardId,
@@ -127,8 +127,57 @@ const consultancyService = {
     };
 
     const isScheduled = await model.getDocumentById(query);
-    console.log(isScheduled);
     return isScheduled;
+  }),
+
+  endConsultancy: serviceHandler(async (data) => {
+    const { consultancyCardId, supervisorId, decodedUser } = data;
+
+    const query = {
+      teacherId: supervisorId,
+      cardId: consultancyCardId,
+      studentId: decodedUser._id,
+      status: "inProgress",
+    };
+
+    const matchingDocument = await model.getDocumentById(query);
+
+    if (!matchingDocument) {
+      throw new Error(
+        "No matching document found. The consultancy may not exist or the status may not be 'inProgress'."
+      );
+    }
+
+    matchingDocument.status = "completed";
+
+    await model.save(matchingDocument);
+
+    return matchingDocument;
+  }),
+
+  activeOrInactiveConsultancy: serviceHandler(async (data) => {
+    const { consultancyCardId, supervisorId, decodedUser } = data;
+
+    const query = {
+      teacherId: supervisorId,
+      cardId: consultancyCardId,
+      studentId: decodedUser._id,
+    };
+
+    const consultancy = await model.getDocumentById(query);
+    if (!consultancy) {
+      throw new Error("No matching document found.");
+    }
+
+    if (consultancy.type === "single") {
+      return consultancy.status === "inProgress" ? true : false;
+    } else if (consultancy.scheduledDate) {
+      const currentDate = new Date();
+      const scheduledDate = new Date(consultancy.scheduledDate);
+      const daysDifference = (currentDate - scheduledDate) / (1000 * 3600 * 24);
+
+      return daysDifference <= 30 ? true : false;
+    }
   }),
 };
 

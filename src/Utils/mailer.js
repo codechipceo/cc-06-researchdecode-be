@@ -1,4 +1,7 @@
 const nodemailer = require("nodemailer");
+const pug = require("pug");
+const path = require("path");
+
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -9,11 +12,17 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendVerificationEmail = async (email, token) => {
+  const url = `${process.env.BASE_URL}/?token=${token}`;
+
+  const templatePath = path.join(__dirname, '..', 'templates', 'verification-email.pug');
+
+  const html = pug.renderFile(templatePath, { url });
+
   const mailOptions = {
     from: process.env.EMAIL,
     to: email,
     subject: "Email Verification",
-    text: `Please verify your email using the following link: ${process.env.BASE_URL}/verify-email?token=${token}`,
+    html,
   };
 
   try {
@@ -23,4 +32,37 @@ const sendVerificationEmail = async (email, token) => {
   }
 };
 
-module.exports = { sendVerificationEmail };
+const sendCustomEmail = async (email, templateName, subject, data = {}) => {
+  const templatePath = path.join(
+    __dirname,
+    "..",
+    "templates",
+    `${templateName}.pug`
+  );
+
+  let html;
+  try {
+    html = pug.renderFile(templatePath, data);
+  } catch (error) {
+    console.error("Error rendering Pug template:", error);
+    return;
+  }
+
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject,
+    html,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Email sent to ${email} successfully.`);
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw new Error(`Error sending email`)
+  }
+};
+
+
+module.exports = { sendVerificationEmail, sendCustomEmail };
