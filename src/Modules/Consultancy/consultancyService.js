@@ -1,13 +1,13 @@
 const DatabaseService = require("../../Service/DbService");
-const paymentInstance = require("../../Utils/paymentGatewayUtil");
 const serviceHandler = require("../../Utils/serviceHandler");
 const Consultancy = require("./ConsultancyModel");
 const { v4: uuidv4 } = require("uuid");
-const Razorpay = require("razorpay");
-const crypto = require("crypto");
+
 const CustomError = require("../../Errors/CustomError");
 const paymentService = require("../Payment/paymentService");
 const model = new DatabaseService(Consultancy);
+const ConsultancyCard = require("../ConsultancyCard/consultancyCardModel");
+const consultancyCardModel = new DatabaseService(ConsultancyCard);
 const paymentGatewayInstance = require("../../Utils/paymentGatewayUtil");
 const instance = paymentGatewayInstance.getInstance();
 
@@ -117,42 +117,50 @@ const consultancyService = {
   }),
 
   verifyConsultancy: serviceHandler(async (data) => {
-    const { consultancyCardId, supervisorId, decodedUser } = data;
+    const { consultancyCardId, decodedUser } = data;
+    let isScheduled = false;
+
+    const getCard = await consultancyCardModel.getDocumentById({
+      _id: consultancyCardId,
+    });
+    if (!getCard) {
+      throw new CustomError(400, "Incorrect Card Id");
+    }
 
     const query = {
-      teacherId: supervisorId,
+      teacherId: getCard?.teacherId,
       cardId: consultancyCardId,
       studentId: decodedUser._id,
       status: "inProgress",
     };
 
-    const isScheduled = await model.getDocumentById(query);
-    return isScheduled;
+    isScheduled = await model.getAllDocuments(query);
+    if (isScheduled.length > 0) {
+      return true;
+    }
+
+    return false;
   }),
 
   endConsultancy: serviceHandler(async (data) => {
     const { consultancyCardId, supervisorId, decodedUser } = data;
 
+    const getCard = await consultancyCardModel.getDocumentById({
+      _id: consultancyCardId,
+    });
+    if (!getCard) {
+      throw new CustomError(400, "Incorrect Card Id");
+    }
+
     const query = {
-      teacherId: supervisorId,
+      teacherId: getCard?.teacherId,
       cardId: consultancyCardId,
       studentId: decodedUser._id,
       status: "inProgress",
     };
 
-    const matchingDocument = await model.getDocumentById(query);
-
-    if (!matchingDocument) {
-      throw new Error(
-        "No matching document found. The consultancy may not exist or the status may not be 'inProgress'."
-      );
-    }
-
-    matchingDocument.status = "completed";
-
-    await model.save(matchingDocument);
-
-    return matchingDocument;
+    const updatedDocument = await model.updateDocument(query, {status:'completed'});
+    return updatedDocument;
   }),
 
   activeOrInactiveConsultancy: serviceHandler(async (data) => {
