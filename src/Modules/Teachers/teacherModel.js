@@ -20,7 +20,7 @@ const teacherSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      trim: true,
+      trim: true
     },
     aboutTeacher: {
       type: String,
@@ -46,9 +46,10 @@ const teacherSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    
     isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     isDelete: {
       type: Boolean,

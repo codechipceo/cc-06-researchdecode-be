@@ -1,7 +1,8 @@
-const Teacher = require("../Profiles/profileModel");
+const Teacher = require("../Profiles/profileModel.js");
 const DbService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
 const CustomError = require("../../Errors/CustomError");
+const callRazorpayApi= require("./razorpayHelper.js")
 const {
   hashPassword,
   comparePasswords,
@@ -11,9 +12,11 @@ const bcrypt = require("bcryptjs");
 
 const model = new DbService(Teacher);
 
+
 const teacherService = {
   create: serviceHandler(async (data) => {
     const { password, ...teacherData } = data;
+
     const hashedPassword = await hashPassword(password);
 
     const savedData = await model.save({
@@ -21,13 +24,48 @@ const teacherService = {
       password: hashedPassword,
     });
 
+const {email,phoneNumber,name,address}=data
+
+    const payload = {
+      email: email,
+      phone: phoneNumber,
+      type: "route",
+      reference_id: savedData._id.toString().substring(0, 20),
+      legal_business_name: name,
+      business_type: "partnership",
+      contact_name: name,
+      profile: {
+       "category":"healthcare",
+      "subcategory":"clinic",
+        addresses: {
+          registered: {
+            street1: address.city,
+            street2: address.street,
+            city: address.city,
+            state: "New York",
+            postal_code:address.postalCode,
+            country: address.country,
+          },
+        },
+      },
+    
+    };
+
+    const response = await callRazorpayApi('/v2/accounts', 'POST', payload);
+    console.log('Razorpay account created:', response);
+
+    savedData.razorPayID=response.id
+  await savedData.save()
     return savedData;
   }),
 
   getAll: serviceHandler(async (data) => {
     const query = { isDelete: false, role: "TEACHER" };
     const savedData = await model.getAllDocuments(query, data);
-    const totalCount = await model.totalCounts({ isDelete: false, role:"TEACHER" });
+    const totalCount = await model.totalCounts({
+      isDelete: false,
+      role: "TEACHER",
+    });
 
     return { savedData, totalCount };
   }),
