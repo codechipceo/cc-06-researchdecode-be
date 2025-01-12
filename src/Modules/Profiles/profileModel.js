@@ -54,6 +54,23 @@ const profileSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    accountNumber:{
+      type:Number,
+      required:true
+    },
+    IFSC_Code:{
+      type:String,
+      required:true
+    },
+   
+    isBankActive:{
+      type:Boolean,
+      default:false
+    },
+   razorPayID:{
+    type:String,
+    required:true
+   },
     role: {
       type: String,
       enum: ["ADMIN", "TEACHER"],
