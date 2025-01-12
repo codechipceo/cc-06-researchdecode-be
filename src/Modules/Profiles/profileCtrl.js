@@ -2,19 +2,32 @@ const CustomError = require("../../Errors/CustomError");
 const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
 const ProfileService = require("./profileService");
+const { validationResult } = require("express-validator");
+const profilevalidatormiddleware = require("../../middlewares/validation/profilevalidorschema");
 
 const profileCtrl = {
-  create: asyncHandler(async (req, res, next) => {
-    const profileData = req.body;
+  create: [
+    profilevalidatormiddleware,
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        console.log(errors.errors);
+        
+        return res
+          .json({ msg:errors.errors });
+      } else {
+        const profileData = req.body;
 
-    const savedProfile = await ProfileService.create(profileData);
+        const savedProfile = await ProfileService.create(profileData);
 
-    return successResponse({
-      res: res,
-      data: savedProfile,
-      msg: "Profile created Successfully",
-    });
-  }),
+        return successResponse({
+          res: res,
+          data: savedProfile,
+          msg: "Profile created Successfully",
+        });
+      }
+    }),
+  ],
 
   getAll: asyncHandler(async (req, res, next) => {
     const profileDTO = req.body;

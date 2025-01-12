@@ -1,19 +1,37 @@
+const { validationResult } = require("express-validator");
 const CustomError = require("../../Errors/CustomError");
 const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
 const StudentService = require("./studentService");
+const SignupValidationSchema = require("../../middlewares/validation/SignupValidationSchema");
+const SignInValidationSchema = require("../../middlewares/validation/SigninvalidationSchema");
 
 const studentCtrl = {
-  create: asyncHandler(async (req, res, next) => {
-    const studentData = req.body;
+  create: [
+    SignupValidationSchema,
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
+      let savedStudent;
 
-    const savedStudent = await StudentService.create(studentData);
-    return successResponse({
-      res: res,
-      data: savedStudent,
-      msg: "Student created Successfully",
-    });
-  }),
+      if (!errors.isEmpty()) {
+        console.log("validation err");
+        console.log(errors.errors);
+      } else {
+        const studentData = req.body;
+        savedStudent = await StudentService.create(studentData);
+      }
+
+      if (!errors.isEmpty()) {
+        return res.json({ msg: errors.errors });
+      } else {
+        return successResponse({
+          res: res,
+          data: savedStudent,
+          msg: "Student created Successfully",
+        });
+      }
+    }),
+  ],
 
   getAll: asyncHandler(async (req, res, next) => {
     const studentDTO = req.body;
@@ -27,7 +45,7 @@ const studentCtrl = {
   }),
 
   getById: asyncHandler(async (req, res, next) => {
-    const  studentId  = req.body;
+    const studentId = req.body;
     const studentById = await StudentService.getById(studentId);
     return successResponse({ res, data: studentById, msg: "Student By Id" });
   }),
@@ -52,33 +70,39 @@ const studentCtrl = {
     });
   }),
 
-  signIn: asyncHandler(async (req, res, next) => {
-    const { email, password } = req.body;
-    const { user, token } = await StudentService.signIn(email, password);
-    return successResponse({
-      res,
-      data: { user, token },
-      msg: "Login successful",
-    });
-  }),
+  signIn: [
+    SignInValidationSchema,
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
 
+      if (!errors.isEmpty()) {
+        console.log("validation err");
+        console.log(errors.errors);
+        return res.json({ msg: errors.errors });
+      } else {
+        const { email, password } = req.body;
+        const { user, token } = await StudentService.signIn(email, password);
+
+        return successResponse({
+          res,
+          data: { user, token },
+          msg: "Login successful",
+        });
+      }
+    }),
+  ],
 
   verifyEmail: async (req, res, next) => {
+    const decodedUser = req.decodedUser;
 
-      // Save the decoded user from the request
-      const decodedUser = req.decodedUser;
-// console.log("decoded user is ",decodedUser);
+    const user = await StudentService.verifyEmail(decodedUser);
 
-     const user= await StudentService.verifyEmail(decodedUser);
-
-
-      return successResponse({
-        res,
-        data: user,
-        msg: "email verified",
-      })
-  }
-}
-
+    return successResponse({
+      res,
+      data: user,
+      msg: "email verified",
+    });
+  },
+};
 
 module.exports = studentCtrl;
