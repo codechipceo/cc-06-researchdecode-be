@@ -37,7 +37,7 @@ adminRouter.use("/consultancy", consultancyRouter);
 adminRouter.use("/labs", labsRouter);
 adminRouter.use("/teacheronboarding", teacherOnBoardingRouter);
 adminRouter.use("/webinar",verifyToken, webinarRouter);
-
+adminRouter.use("/courseEnrollment", courseEnrollmentRouter);
 // USER ROUTES
 userRouter.use("/paperRequest", paperRequestRouter);
 userRouter.use("/student", studentRouter);

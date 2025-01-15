@@ -4,11 +4,14 @@ const paymentGatewayInstance = require("../../Utils/paymentGatewayUtil");
 const serviceHandler = require("../../Utils/serviceHandler");
 const paymentService = require("../Payment/paymentService");
 const CourseEnrollment = require("./courseEnrollmentModel");
+const StudentModel=require("../Students/studentModel");
+const CourseModel=require("../Courses/coursesModel")
 const { v4: uuidv4 } = require("uuid");
 
 const model = new DbService(CourseEnrollment);
 const instance = paymentGatewayInstance.getInstance();
-
+const Student=new DbService(StudentModel);
+const Course=new DbService(CourseModel)
 const courseEnrollmentService = {
   create: serviceHandler(async (data) => {
     const { amount, decodedUser, courseId, enrolledAt } = data;
@@ -90,6 +93,29 @@ const courseEnrollmentService = {
     if (isEnrolled) return true;
     return false;
   }),
+
+ AllEnrolledStudents: serviceHandler(async () => {
+  const filter = { isEnrolled: true };
+  const enrolledStudents = await model.getAllDocuments(filter);
+
+  const detailedEnrolledStudents = await Promise.all(
+    enrolledStudents.map(async (enrollment) => {
+      const student = await Student.getDocumentById({ _id: enrollment.studentId });
+      const course = await Course.getDocumentById({ _id: enrollment.courseId });
+
+      return {
+        _id: enrollment.studentId,
+        studentName: student ? `${student.firstName} ${student.lastName}` : null,
+        courseId: enrollment.courseId,
+        courseName: course ? course.courseName : null,
+      };
+    })
+  );
+
+  return detailedEnrolledStudents;
+})
+
+
 };
 
 module.exports = courseEnrollmentService;

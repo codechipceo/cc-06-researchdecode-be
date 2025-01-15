@@ -73,6 +73,17 @@ const courseEnrollCtrl = {
   //       msg: "Course Deleted Successfully",
   //     });
   //   }),
+
+
+  AllEnrolledStudents:asyncHandler(async(req,res)=>{
+    const response = await courseEnrollmentService.AllEnrolledStudents();
+    return successResponse({
+      res,
+      data: response,
+      msg: "All Enrolled Students Fetched ",
+    });
+  })
+
 };
 
 module.exports = courseEnrollCtrl;
