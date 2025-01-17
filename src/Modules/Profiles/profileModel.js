@@ -20,7 +20,7 @@ const profileSchema = new mongoose.Schema(
       maxlength: 50,
     },
     experience: {
-      type: Number, // Number of years of experience
+      type: String, // Number of years of experience
     },
     phoneNumber: {
       type: String,
@@ -69,7 +69,6 @@ const profileSchema = new mongoose.Schema(
     },
    razorPayID:{
     type:String,
-    required:true
    },
     role: {
       type: String,
@@ -78,7 +77,7 @@ const profileSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     isDelete: {
       type: Boolean,

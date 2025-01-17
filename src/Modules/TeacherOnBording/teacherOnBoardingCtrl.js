@@ -50,6 +50,17 @@ const teacheronboardingCtrl = {
       msg: "Onboarding request approved successfully",
     });
   }),
+
+  activeBank: asyncHandler(async (req, res, next) => {
+    const reqDto = req.body;
+    const approvedTeacher =
+      await TeacherServiceOnboardingService.activateBank(reqDto);
+    return successResponse({
+      res: res,
+      data: approvedTeacher,
+      msg: "Active Bank successfully",
+    });
+  }),
 };
 
 module.exports = teacheronboardingCtrl;
