@@ -43,6 +43,16 @@ const teacherOnBordingService = {
 
   getPendingRequests: serviceHandler(async (data) => {
     const query = { onboardingStatus: "pending" };
+
+ const { search } = data;
+  if (search) {
+    query.$or = [
+      { firstName: { $regex: search, $options: "i" } },
+      { lastName: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+      { phoneNumber: { $regex: search, $options: "i" } }
+    ];
+  }
     const result = await model.getAllDocuments(query, data);
     const pendingCount = await model.totalCounts(query);
 

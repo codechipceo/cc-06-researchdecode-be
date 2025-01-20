@@ -26,8 +26,14 @@ const videoService = {
     if (role === "TEACHER") {
       query.createdBy = data.createdBy;
     }
+
+    const { search } = data;
+    if (search) {
+    query.videoTitle = { $regex: search, $options: "i" }; 
+  }
     const populate = [{ path: "courseId" }];
     const modifyData = { ...data, populate };
+
 
     const savedData = await model.getAllDocuments(query, modifyData);
     const totalCount = await model.totalCounts({ isDelete: false });
