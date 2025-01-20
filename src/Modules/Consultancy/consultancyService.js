@@ -1,6 +1,7 @@
 const DatabaseService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
 const Consultancy = require("./ConsultancyModel");
+const ConsultancyCardModel  = require("../ConsultancyCard/consultancyCardModel");
 const { v4: uuidv4 } = require("uuid");
 
 const CustomError = require("../../Errors/CustomError");
@@ -13,10 +14,22 @@ const instance = paymentGatewayInstance.getInstance();
 
 const consultancyService = {
   create: serviceHandler(async (data) => {
-    const { teacherId, studentId, cardId, type, scheduledDate, amount } = data;
+    const {  decodedUser, cardId, type, scheduledDate } = data;
     let consultancy, payment;
 
+
+    const studentId  = decodedUser._id
     try {
+
+      // if active consultancy for this card exists, then reject the request
+      const isActive  = await model.getDocument({cardId : cardId, studentId : studentId, isScheduled : true})
+
+      if (isActive?.isScheduled) throw new CustomError(400,"Consultancy Is Already Active")
+      const consultancyCard = await cardModel.getDocumentById({ _id: cardId });
+    const { teacherId, pricing } = consultancyCard;
+
+    const amount =
+      type.toLowerCase() === "single" ? pricing.single : pricing.project;
       const options = {
         amount: amount * 100,
         currency: "INR",
@@ -83,7 +96,7 @@ const consultancyService = {
       razorpay_signature
     );
 
-    if (!isSignatureVerified) {
+    if (isSignatureVerified === false) {
       throw new CustomError(400, "Payment Not Verified");
     } else {
       const getConsultancy = await model.getDocumentById({
@@ -132,6 +145,7 @@ const consultancyService = {
       cardId: consultancyCardId,
       studentId: decodedUser._id,
       status: "inProgress",
+      isScheduled: true,
     };
 
     isScheduled = await model.getAllDocuments(query);
@@ -143,7 +157,7 @@ const consultancyService = {
   }),
 
   endConsultancy: serviceHandler(async (data) => {
-    const { consultancyCardId, supervisorId, decodedUser } = data;
+    const { consultancyCardId,  decodedUser } = data;
 
     const getCard = await consultancyCardModel.getDocumentById({
       _id: consultancyCardId,

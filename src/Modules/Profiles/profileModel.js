@@ -20,7 +20,7 @@ const profileSchema = new mongoose.Schema(
       maxlength: 50,
     },
     experience: {
-      type: Number, // Number of years of experience
+      type: String, // Number of years of experience
     },
     phoneNumber: {
       type: String,
@@ -54,6 +54,22 @@ const profileSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    accountNumber:{
+      type:Number,
+      required:true
+    },
+    IFSC_Code:{
+      type:String,
+      required:true
+    },
+   
+    isBankActive:{
+      type:Boolean,
+      default:false
+    },
+   razorPayID:{
+    type:String,
+   },
     role: {
       type: String,
       enum: ["ADMIN", "TEACHER"],
@@ -61,7 +77,7 @@ const profileSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     isDelete: {
       type: Boolean,

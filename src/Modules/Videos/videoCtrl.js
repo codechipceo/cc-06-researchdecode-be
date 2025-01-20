@@ -1,6 +1,8 @@
 const successResponse = require("../../Utils/apiResponse");
 const asyncHandler = require("../../Utils/asyncHandler");
 const videoService = require("./videoService");
+const videovalidationmiddleware = require("../../middlewares/validation/videosvalidationschema");
+const { validationResult } = require("express-validator");
 
 const videoCtrl = {
   getByCourseId: asyncHandler(async (req, res, next) => {
@@ -9,19 +11,30 @@ const videoCtrl = {
 
     return successResponse({ res, data: videosData });
   }),
-  create: asyncHandler(async (req, res, next) => {
-    const videoDTO = req.body;
+  create: [
+    videovalidationmiddleware,
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
 
-    const videoSaved = await videoService.create({
-      ...videoDTO,
-      file: req.files,
-    });
-    return successResponse({
-      res: res,
-      data: videoSaved,
-      msg: "Video created Successfully",
-    });
-  }),
+      if (!errors.isEmpty()) {
+        console.log(errors.errors);
+
+        return res.json({ msg: errors.errors });
+      } else {
+        const videoDTO = req.body;
+
+        const videoSaved = await videoService.create({
+          ...videoDTO,
+          file: req.files,
+        });
+        return successResponse({
+          res: res,
+          data: videoSaved,
+          msg: "Video created Successfully",
+        });
+      }
+    }),
+  ],
 
   getAll: asyncHandler(async (req, res, next) => {
     const videoDTO = req.body;
