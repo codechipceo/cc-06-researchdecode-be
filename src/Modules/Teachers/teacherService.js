@@ -1,7 +1,8 @@
-const Teacher = require("../Profiles/profileModel");
+const Teacher = require("../Profiles/profileModel.js");
 const DbService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
 const CustomError = require("../../Errors/CustomError");
+const callRazorpayApi= require("../../Utils/razorpayHelper.js")
 const {
   hashPassword,
   comparePasswords,
@@ -10,6 +11,7 @@ const {
 const bcrypt = require("bcryptjs");
 
 const model = new DbService(Teacher);
+
 
 const teacherService = {
   create: serviceHandler(async (data) => {
@@ -20,14 +22,16 @@ const teacherService = {
       ...teacherData,
       password: hashedPassword,
     });
-
     return savedData;
   }),
 
   getAll: serviceHandler(async (data) => {
     const query = { isDelete: false, role: "TEACHER" };
     const savedData = await model.getAllDocuments(query, data);
-    const totalCount = await model.totalCounts({ isDelete: false, role:"TEACHER" });
+    const totalCount = await model.totalCounts({
+      isDelete: false,
+      role: "TEACHER",
+    });
 
     return { savedData, totalCount };
   }),
@@ -37,6 +41,28 @@ const teacherService = {
     const savedDataById = await model.getDocumentById(query);
     return savedDataById;
   }),
+
+  approvedTeacher: serviceHandler(async (data) => {
+  const { _id } = data;
+
+  if (!_id) {
+    throw new Error("Teacher ID is required.");
+  }
+
+  const findUser = await model.getDocumentById({ _id:_id});
+
+  if (!findUser) {
+    throw new Error("User not found.");
+  }
+  // return findUser.isBankActive ;
+
+  if (findUser.isBankActive===false) {
+    return false
+  }
+
+  return findUser.name
+}),
+
   update: serviceHandler(async (updateData) => {
     const { teacherId } = updateData;
     const filter = { _id: teacherId };

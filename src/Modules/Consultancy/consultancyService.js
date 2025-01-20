@@ -97,7 +97,7 @@ const consultancyService = {
       razorpay_signature
     );
 
-    if (!isSignatureVerified) {
+    if (isSignatureVerified === false) {
       throw new CustomError(400, "Payment Not Verified");
     } else {
       const getConsultancy = await model.getDocumentById({

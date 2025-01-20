@@ -17,6 +17,9 @@ const {
   collaborationRequestRouter,
 } = require("./Collaboration/collaborationRouter");
 const { teacherOnBoardingRouter } = require("./TeacherOnBording/teacherOnBoardingRoute");
+const { webinarRouter } = require("./Webinars/webinarRouter");
+const webinarEnrollmentRouter = require("./WebinarEnrollment/webinarEnrollmentRouter");
+const { paymentRouter } = require("./Payment/paymentRouter");
 
 const adminRouter = require("express").Router();
 const userRouter = require("express").Router();
@@ -33,6 +36,8 @@ adminRouter.use("/consultancyCard", consultancyCardRouter);
 adminRouter.use("/consultancy", consultancyRouter);
 adminRouter.use("/labs", labsRouter);
 adminRouter.use("/teacheronboarding", teacherOnBoardingRouter);
+adminRouter.use("/webinar",verifyToken, webinarRouter);
+adminRouter.use("/courseEnrollment", courseEnrollmentRouter);
 // USER ROUTES
 userRouter.use("/paperRequest", paperRequestRouter);
 userRouter.use("/student", studentRouter);
@@ -45,5 +50,8 @@ userRouter.use("/consultancy", consultancyRouter);
 userRouter.use("/courseEnrollment", verifyToken, courseEnrollmentRouter);
 userRouter.use("/labs", labsRouter);
 userRouter.use("/collaboration", collaborationRequestRouter);
-userRouter.use("/teacheronboarding",teacherOnBoardingRouter)
+userRouter.use("/teacheronboarding",teacherOnBoardingRouter);
+userRouter.use("/webinarEnrollment",verifyToken, webinarEnrollmentRouter);
+userRouter.use("/payment",paymentRouter)
+
 module.exports = { adminRouter, userRouter };
