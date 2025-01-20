@@ -78,6 +78,18 @@ const teacherCtrl = {
       msg: " login successful",
     });
   }),
+
+  approvedTeacher:asyncHandler(async(req,res,next)=>{
+    const decodedUser = req.decodedUser;
+    console.log(decodedUser);
+    const user = await TeacherService.approvedTeacher(decodedUser);
+    
+    return successResponse({
+      res,
+      data: user,
+      
+    });
+  })
 };
 
 module.exports = teacherCtrl;
