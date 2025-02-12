@@ -5,6 +5,7 @@ const asyncHandler = require("../../Utils/asyncHandler");
 const StudentService = require("./studentService");
 const SignupValidationSchema = require("../../middlewares/validation/SignupValidationSchema");
 const SignInValidationSchema = require("../../middlewares/validation/SigninvalidationSchema");
+const jwt = require("jsonwebtoken");
 
 const studentCtrl = {
   create: [
@@ -14,8 +15,7 @@ const studentCtrl = {
       let savedStudent;
 
       if (!errors.isEmpty()) {
-        console.log("validation err");
-        console.log(errors.errors);
+
       } else {
         const studentData = req.body;
         savedStudent = await StudentService.create(studentData);
@@ -76,8 +76,7 @@ const studentCtrl = {
       const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
-        console.log("validation err");
-        console.log(errors.errors);
+
         return res.json({ msg: errors.errors });
       } else {
         const { email, password } = req.body;
@@ -93,15 +92,28 @@ const studentCtrl = {
   ],
 
   verifyEmail: async (req, res, next) => {
-    const decodedUser = req.decodedUser;
 
-    const user = await StudentService.verifyEmail(decodedUser);
+    try {
+      const token = req.query.token;
+      const jwtRes = jwt.verify(
+        token,
+        process.env.JWT_SECRET,
+        (err, response) => {
+          if (err) {
+            return res.status(400).json({ msg: err.message });
+          } else {
+            return response;
+          }
+        }
+      );
 
-    return successResponse({
-      res,
-      data: user,
-      msg: "email verified",
-    });
+      await StudentService.verifyEmail(jwtRes);
+
+      return res.redirect(`https://www.researchdecode.com/signin`);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ msg: "Server Error" });
+    }
   },
 };
 

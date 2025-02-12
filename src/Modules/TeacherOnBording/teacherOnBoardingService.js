@@ -10,23 +10,23 @@ const { sendCustomEmail } = require("../../Utils/mailer");
 const callRazorpayApi= require("../../Utils/razorpayHelper.js")
 const teacherOnBordingService = {
   submitRequest: serviceHandler(async (data) => {
-    const { 
-      firstName, 
-      lastName, 
-      email, 
-      phoneNumber, 
-      experience, 
-      accountNumber, 
+    const {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      experience,
+      accountNumber,
       bankName,
-      IFSC_Code, 
-      address 
+      IFSC_Code,
+      address
     } = data;
-  
+
     const isTeacher = await model.getDocument({ email });
     if (isTeacher) {
       throw new CustomError(400, "Teacher with this email already exists");
     }
-  
+
     const payload = {
       firstName,
       lastName,
@@ -36,7 +36,7 @@ const teacherOnBordingService = {
       accountNumber,
       bankName,
       IFSC_Code,
-      address, 
+      address,
     };
     return await model.save(payload);
   }),
@@ -61,8 +61,7 @@ const teacherOnBordingService = {
 
  approveOnboarding: serviceHandler(async (data) => {
   const { onboardId } = data;
-  console.log(onboardId);
-  
+
   const isOnboardTeacher = await model.getDocumentById({ _id: onboardId });
   if (!isOnboardTeacher) {
     throw new CustomError(404, "Teacher onboarding request not found");
@@ -74,11 +73,11 @@ const teacherOnBordingService = {
   }
   const generatedPwd = generatePassword(12);
   console.log(generatedPwd);
-  
+
   const hashedPassword = await hashPassword(generatedPwd, 10);
 
 
- 
+
 console.log(isOnboardTeacher);
 
 
@@ -123,7 +122,7 @@ console.log(isOnboardTeacher);
         },
       },
     },
-  
+
   };
 
   const response = await callRazorpayApi('/v2/accounts', 'POST', payload);
@@ -150,12 +149,12 @@ console.log(isOnboardTeacher);
   };
 
   // Uncomment the following line to send an email after approval
-  // await sendCustomEmail(
-  //   newTeacher?.email,
-  //   "onboarding-approval",
-  //   "Congrats For Approval Of Supervisor At ResearchDecode",
-  //   emailPayload
-  // );
+  await sendCustomEmail(
+    newTeacher?.email,
+    "onboarding-approval",
+    "Congrats For Approval Of Supervisor At ResearchDecode",
+    emailPayload
+  );
 
   delete newTeacher.password;
   return newTeacher;
@@ -170,7 +169,7 @@ activateBank: serviceHandler(async (data) => {
   }
 
   const query = { _id: teacherId };
-  
+
   const teacher = await profileModel.getDocumentById(query);
 
   if (!teacher) {
