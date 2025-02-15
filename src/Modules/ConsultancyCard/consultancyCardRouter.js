@@ -4,7 +4,7 @@ const consultancyCardRouter = require("express").Router();
 
 consultancyCardRouter.post("/create",verifyToken,  consultancyCardCtrl.create);
 consultancyCardRouter.post("/getById", consultancyCardCtrl.getById);
-consultancyCardRouter.post("/getAll", consultancyCardCtrl.getAll);
+consultancyCardRouter.post("/getAll", verifyToken, consultancyCardCtrl.getAll);
 consultancyCardRouter.post(
   "/getUserConsultancyCard",
   verifyToken,
