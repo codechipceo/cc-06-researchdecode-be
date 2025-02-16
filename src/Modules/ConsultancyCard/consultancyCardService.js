@@ -11,20 +11,27 @@ const consultancyCardService = {
     return await model.save(payload);
   }),
 
-  getAll: serviceHandler(async (data) => {
-    const { search } = data;
-    const query = { isDelete: false };
+getAll: serviceHandler(async (data) => {
+  const { search, userRole,createdBy  } = data; // Extract user role and teacher ID
 
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-      ];
-    }
+  const query = { isDelete: false };
 
-    data.populate = [{ path: "teacherId" }];
-    return await model.getAllDocuments(query, data);
-  }),
+  // Apply search filter
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  const res = await model.getAllDocuments(query, data);
+
+   const filteredData = userRole === "TEACHER" 
+    ? res.filter((item) => item.teacherId?._id.toString() === createdBy.toString()) 
+    : res;
+  return filteredData;
+}),
+
 
   getById: serviceHandler(async (data) => {
     const { consultancyCardId } = data;

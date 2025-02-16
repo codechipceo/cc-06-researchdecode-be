@@ -100,13 +100,13 @@ const student ={
   getUsersChattedWith: serviceHandler(async (userObj) => {}),
 
  verifyEmail: serviceHandler(async (decodedUser) => {
-  const { _id } = decodedUser;
+   const { _id } = decodedUser;
 
- 
+
   const query = { _id };
   const updateData = { emailVerified: true };
 
-  const options = { new: true }; 
+  const options = { new: true };
   const savedUser = await model.updateDocument(query, updateData, options);
 
   if (!savedUser) {

@@ -4,7 +4,9 @@ const path = require("path");
 
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: "smtp.hostinger.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL,
     pass: process.env.EMAIL_PASSWORD,
@@ -27,6 +29,7 @@ const sendVerificationEmail = async (email, token) => {
 
   try {
     await transporter.sendMail(mailOptions);
+    console.log(`Email sent to ${email} successfully.`);
   } catch (error) {
     console.error("Error sending email", error);
   }

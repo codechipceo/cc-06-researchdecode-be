@@ -25,7 +25,9 @@ const consultancyService = {
       const isActive  = await model.getDocument({cardId : cardId, studentId : studentId, isScheduled : true})
 
       if (isActive?.isScheduled) throw new CustomError(400,"Consultancy Is Already Active")
-      const consultancyCard = await cardModel.getDocumentById({ _id: cardId });
+      const consultancyCard = await consultancyCardModel.getDocumentById({
+        _id: cardId,
+      });
     const { teacherId, pricing } = consultancyCard;
 
     const amount =
