@@ -32,12 +32,13 @@ adminRouter.use("/course", verifyToken, courseRouter);
 adminRouter.use("/video", verifyToken, videoRouter);
 adminRouter.use("/researchPaper", researchPaperRouter);
 adminRouter.use("/assignment", assignmentRouter);
-adminRouter.use("/consultancyCard", consultancyCardRouter);
+adminRouter.use("/consultancyCard",verifyToken, consultancyCardRouter);
 adminRouter.use("/consultancy", consultancyRouter);
 adminRouter.use("/labs", labsRouter);
 adminRouter.use("/teacheronboarding", teacherOnBoardingRouter);
 adminRouter.use("/webinar",verifyToken, webinarRouter);
 adminRouter.use("/courseEnrollment", courseEnrollmentRouter);
+adminRouter.use("/student", studentRouter)
 // USER ROUTES
 userRouter.use("/paperRequest", paperRequestRouter);
 userRouter.use("/student", studentRouter);

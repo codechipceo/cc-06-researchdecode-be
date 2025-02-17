@@ -22,7 +22,8 @@ const webinarService = {
 
     const savedData = await model.getAllDocuments(query);
     const totalCount = await model.totalCounts({ isDelete: false });
-
+    console.log(savedData);
+    
     return { savedData, totalCount };
   }),
 
