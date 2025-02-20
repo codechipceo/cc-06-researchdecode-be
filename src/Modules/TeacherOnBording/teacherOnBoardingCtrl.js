@@ -12,7 +12,7 @@ const teacheronboardingCtrl = {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         console.log(errors.errors);
-        
+
         return res
           .json({ msg: errors.errors });
       } else {
@@ -59,6 +59,17 @@ const teacheronboardingCtrl = {
       res: res,
       data: approvedTeacher,
       msg: "Active Bank successfully",
+    });
+  }),
+
+  rejectOnboardingRequest: asyncHandler(async (req, res, next) => {
+    const reqDto = req.body;
+    const rejectedTeacher =
+      await TeacherServiceOnboardingService.rejectOnboarding(reqDto);
+    return successResponse({
+      res: res,
+      data: rejectedTeacher,
+      msg: "Onboarding request rejected successfully",
     });
   }),
 };

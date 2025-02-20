@@ -7,7 +7,7 @@ const PROFILE = require("../Profiles/profileModel");
 const model = new DbService(TeacherOnbording);
 const profileModel = new DbService(PROFILE);
 const { sendCustomEmail } = require("../../Utils/mailer");
-const callRazorpayApi= require("../../Utils/razorpayHelper.js")
+const callRazorpayApi = require("../../Utils/razorpayHelper.js");
 const teacherOnBordingService = {
   submitRequest: serviceHandler(async (data) => {
     const {
@@ -19,7 +19,7 @@ const teacherOnBordingService = {
       accountNumber,
       bankName,
       IFSC_Code,
-      address
+      address,
     } = data;
 
     const isTeacher = await model.getDocument({ email });
@@ -44,152 +44,175 @@ const teacherOnBordingService = {
   getPendingRequests: serviceHandler(async (data) => {
     const query = { onboardingStatus: "pending" };
 
- const { search } = data;
-  if (search) {
-    query.$or = [
-      { firstName: { $regex: search, $options: "i" } },
-      { lastName: { $regex: search, $options: "i" } },
-      { email: { $regex: search, $options: "i" } },
-      { phoneNumber: { $regex: search, $options: "i" } }
-    ];
-  }
+    const { search } = data;
+    if (search) {
+      query.$or = [
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { phoneNumber: { $regex: search, $options: "i" } },
+      ];
+    }
     const result = await model.getAllDocuments(query, data);
     const pendingCount = await model.totalCounts(query);
 
     return { result, pendingCount };
   }),
 
- approveOnboarding: serviceHandler(async (data) => {
-  const { onboardId } = data;
+  approveOnboarding: serviceHandler(async (data) => {
+    const { onboardId } = data;
 
-  const isOnboardTeacher = await model.getDocumentById({ _id: onboardId });
-  if (!isOnboardTeacher) {
-    throw new CustomError(404, "Teacher onboarding request not found");
-  } else if (isOnboardTeacher.onboardingStatus !== "pending") {
-    throw new CustomError(
-      400,
-      "Teacher onboarding request is already approved or rejected"
-    );
-  }
-  const generatedPwd = generatePassword(12);
-  console.log(generatedPwd);
+    const isOnboardTeacher = await model.getDocumentById({ _id: onboardId });
+    if (!isOnboardTeacher) {
+      throw new CustomError(404, "Teacher onboarding request not found");
+    } else if (isOnboardTeacher.onboardingStatus !== "pending") {
+      throw new CustomError(
+        400,
+        "Teacher onboarding request is already approved or rejected"
+      );
+    }
 
-  const hashedPassword = await hashPassword(generatedPwd, 10);
+    const generatedPwd = generatePassword(12);
+    const hashedPassword = await hashPassword(generatedPwd, 10);
 
+    const newTeacherPayload = {
+      name: `${isOnboardTeacher.firstName} ${isOnboardTeacher.lastName}`,
+      qualification: isOnboardTeacher.qualification,
+      profileImage: isOnboardTeacher.profileImage || "",
+      experience: isOnboardTeacher.experience,
+      username: isOnboardTeacher.firstName + isOnboardTeacher.email,
+      phoneNumber: isOnboardTeacher.phoneNumber,
+      email: isOnboardTeacher.email,
+      password: hashedPassword,
+      role: "TEACHER",
+      accountNumber: isOnboardTeacher.accountNumber,
+      IFSC_Code: isOnboardTeacher.IFSC_Code,
+      address: isOnboardTeacher.address,
+    };
 
-
-console.log(isOnboardTeacher);
-
-
-  const newTeacherPayload = {
-    name: `${isOnboardTeacher.firstName} ${isOnboardTeacher.lastName}`,
-    qualification: isOnboardTeacher.qualification,
-    profileImage: isOnboardTeacher.profileImage || "",
-    experience: isOnboardTeacher.experience,
-    username: isOnboardTeacher.firstName + isOnboardTeacher.email,
-    phoneNumber: isOnboardTeacher.phoneNumber,
-    email: isOnboardTeacher.email,
-    password: hashedPassword,
-    role: "TEACHER",
-    accountNumber:isOnboardTeacher.accountNumber,
-    IFSC_Code:isOnboardTeacher.IFSC_Code,
-    address: isOnboardTeacher.address, // Address added here
-  };
-
-  const newTeacher = await profileModel.save(newTeacherPayload);
-
-
-
-  const payload = {
-    email: newTeacher.email,
-    phone: newTeacher.phoneNumber,
-    type: "route",
-    reference_id: newTeacher._id.toString().substring(0, 20),
-    legal_business_name: newTeacher.name,
-    business_type: "partnership",
-    contact_name: newTeacher.name,
-    profile: {
-     "category":"healthcare",
-    "subcategory":"clinic",
-      addresses: {
-        registered: {
-          street1: newTeacher.address.city,
-          street2: newTeacher.address.street,
-          city: newTeacher.address.city,
-          state: newTeacher.address.state,
-          postal_code:newTeacher.address.postalCode,
-          country: newTeacher.address.country,
+    const payload = {
+      email: newTeacherPayload.email,
+      phone: newTeacherPayload.phoneNumber,
+      type: "route",
+      reference_id: newTeacherPayload.email.substring(0, 20),
+      legal_business_name: newTeacherPayload.name,
+      business_type: "partnership",
+      contact_name: newTeacherPayload.name,
+      profile: {
+        category: "healthcare",
+        subcategory: "clinic",
+        addresses: {
+          registered: {
+            street1: newTeacherPayload.address.city,
+            street2: newTeacherPayload.address.street,
+            city: newTeacherPayload.address.city,
+            state: newTeacherPayload.address.state,
+            postal_code: newTeacherPayload.address.postalCode,
+            country: newTeacherPayload.address.country,
+          },
         },
       },
-    },
+    };
 
-  };
+    try {
+      const response = await callRazorpayApi("/v2/accounts", "POST", payload);
 
-  const response = await callRazorpayApi('/v2/accounts', 'POST', payload);
-  console.log('Razorpay account created:', response);
+      console.log("Razorpay account created:", response);
 
+      // Only save teacher after successful Razorpay account creation
+      newTeacherPayload.razorPayID = response.id;
+      const newTeacher = await profileModel.save(newTeacherPayload);
 
-  newTeacher.razorPayID=response.id
-  await newTeacher.save()
-
-  await model.updateDocument(
-    { _id: onboardId },
-    { onboardingStatus: "approved" }
-  );
-
-  console.log(newTeacher);
-
-  const dashboardPath =
-    `${process.env.FRONTEND_URL}` ?? `https://dashboard.researchdecode.com/`;
-  const emailPayload = {
-    name: newTeacher.name,
-    email: newTeacher.email,
-    password: generatedPwd,
-    loginUrl: dashboardPath,
-  };
-
-  // Uncomment the following line to send an email after approval
-  await sendCustomEmail(
-    newTeacher?.email,
-    "onboarding-approval",
-    "Congrats For Approval Of Supervisor At ResearchDecode",
-    emailPayload
-  );
-
-  delete newTeacher.password;
-  return newTeacher;
-}),
+      await model.updateDocument(
+        { _id: onboardId },
+        { onboardingStatus: "approved" }
+      );
 
 
-activateBank: serviceHandler(async (data) => {
-  const { teacherId } = data;
+      const dashboardPath =
+        process.env.FRONTEND_URL ?? `https://admin.researchdecode.com/`;
+      const emailPayload = {
+        name: newTeacher.name,
+        email: isOnboardTeacher.email,
+        password: generatedPwd,
+        loginUrl: dashboardPath,
+      };
 
-  if (!teacherId) {
-    throw new CustomError(400, "Teacher ID is required");
-  }
+      await sendCustomEmail(
+        newTeacher.email,
+        "onboarding-approval",
+        "Congrats For Approval Of Supervisor At ResearchDecode",
+        emailPayload
+      );
 
-  const query = { _id: teacherId };
+      delete newTeacher.password;
+      return newTeacher;
+    } catch (error) {
+      console.error("Error creating Razorpay account:", error);
+      throw new CustomError(
+        500,
+        "Error creating Razorpay account. Please try again."
+      );
+    }
+  }),
 
-  const teacher = await profileModel.getDocumentById(query);
+  activateBank: serviceHandler(async (data) => {
+    const { teacherId } = data;
 
-  if (!teacher) {
-    throw new CustomError(404, "Teacher not found");
-  }
+    if (!teacherId) {
+      throw new CustomError(400, "Teacher ID is required");
+    }
 
-  const updateData = { isBankActive: !teacher.isBankActive };
-  const options = { new: true };
+    const query = { _id: teacherId };
 
-  const teacherUpdate = await profileModel.updateDocument(query, updateData, options);
+    const teacher = await profileModel.getDocumentById(query);
 
-  return {
-    message: teacherUpdate.isBankActive
-      ? "Bank account activated successfully"
-      : "Bank account deactivated successfully",
-    teacher: teacherUpdate,
-  };
-}),
+    if (!teacher) {
+      throw new CustomError(404, "Teacher not found");
+    }
 
-  rejectOnboarding: serviceHandler(async () => {}),
+    const updateData = { isBankActive: !teacher.isBankActive };
+    const options = { new: true };
+
+    const teacherUpdate = await profileModel.updateDocument(
+      query,
+      updateData,
+      options
+    );
+
+    return {
+      message: teacherUpdate.isBankActive
+        ? "Bank account activated successfully"
+        : "Bank account deactivated successfully",
+      teacher: teacherUpdate,
+    };
+  }),
+
+  rejectOnboarding: serviceHandler(async (data) => {
+    const { onboardId } = data;
+    const isOnboardTeacher = await model.getDocumentById({ _id: onboardId });
+    if (!isOnboardTeacher) {
+      throw new CustomError(404, "Teacher onboarding request not found");
+    } else if (isOnboardTeacher.onboardingStatus !== "pending") {
+      throw new CustomError(
+        400,
+        "Teacher onboarding request is already approved or rejected"
+      );
+    }
+
+
+    await model.updateDocument(
+      { _id: onboardId },
+      { onboardingStatus: "rejected" }
+    );
+
+
+    return "Teacher Rejected Successfully";
+
+
+
+
+  }),
 };
 
 const TeacherServiceOnboardingService = teacherOnBordingService;
