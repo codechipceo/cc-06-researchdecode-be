@@ -25,6 +25,13 @@ const consultancyCtrl = {
     }),
   ],
 
+  getConsultancyByTeacherOrAdmin: asyncHandler(async (req, res, next) => {
+    const bodyDto = req.body
+    const result = await consultancyService.getConsultancyByTeacherOrAdmin(bodyDto);
+    return successResponse({ res, data: result });
+
+  }),
+
   getById: asyncHandler(async (req, res, next) => {
     const docData = req.body;
     const response = await consultancyService.getById(docData);
