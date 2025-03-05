@@ -44,6 +44,7 @@ const consultancyService = {
           amount,
           currency: order.currency,
           razorpayOrderId: order.id,
+          transactionType:'hireTeacher',
         };
         payment = await paymentService.create(paymentPayload);
 
@@ -63,6 +64,58 @@ const consultancyService = {
     } catch (error) {
       throw error;
     }
+  }),
+  getConsultancyByTeacherOrAdmin: serviceHandler(async (data) => {
+    console.log(data)
+    const { decodedUser, expertId } = data;
+    let result;
+    const query = {}
+    data.populate=[{path:'cardId'}, {path:'teacherId'}]
+    if (decodedUser.role === 'admin') {
+      query.teacherId = expertId;
+      result= await model.getAllDocuments(query, data);
+    } else {
+      query.teacherId = decodedUser._id;
+      result= await model.getAllDocuments(query, data);
+    }
+    // grouping data
+function groupBy(array, keyGetter) {
+  var grouped = {};
+  array.forEach(function (item) {
+    var key = keyGetter(item);
+    if (!grouped[key]) {
+      grouped[key] = [];
+    }
+    grouped[key].push(item);
+  });
+  return grouped;
+}
+
+var groupedData = groupBy(result, function (item) {
+  return item.cardId._id;
+});
+
+var groupedEntry = {};
+Object.keys(groupedData).forEach(function (key) {
+  var value = groupedData[key];
+
+  groupedEntry[key] = {
+    _id: value[0]._id,
+    title: value[0].cardId.title,
+    sales: value.length,
+    price: value.reduce(function (sum, item) {
+      return sum + Number(item.cardId.pricing.single);
+    }, 0),
+    teacherName: value[0].teacherId.name,
+  };
+});
+
+    console.log(groupedEntry);
+const arr=    Object.keys(groupedData).map(item => groupedEntry[item]);
+
+ return arr;
+
+
   }),
 
   getAll: serviceHandler(async (data) => {
