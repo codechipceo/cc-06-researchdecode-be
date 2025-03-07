@@ -37,6 +37,20 @@ const paymentSchema = new Schema(
     transactionId: {
       type: String,
     },
+    referenceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.transactionType !== "other"; // Required unless transactionType is 'other'
+      },
+      refPath: "referenceModel", // Dynamically selects collection
+    },
+    referenceModel: {
+      type: String,
+      enum: ["Course", "Consultancy", "Webinar"], // Collection names
+      required: function () {
+        return this.transactionType !== "other";
+      },
+    },
   },
   {
     timestamps: true,

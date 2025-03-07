@@ -14,6 +14,7 @@ const model = new DbService(Student);
 const studentService = {
   create: serviceHandler(async (data) => {
     const { email, password, ...userData } = data;
+    console.log("INIT STUDENT SIGNUP" , userData)
     // Check if email and password are provided
     if (!email || !password) {
       throw new Error("Email and password are required");
@@ -21,6 +22,7 @@ const studentService = {
     const hashedPassword = await hashPassword(password);
 
     // Save the student data to the database
+
     const savedData = await model.save({
       email,
       ...userData,

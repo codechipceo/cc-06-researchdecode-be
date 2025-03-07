@@ -66,47 +66,6 @@ const studentValidationSchema = checkSchema({
     },
     optional: true,
   },
-  "address.street": {
-    notEmpty: {
-      errorMessage: "Street address is required",
-    },
-    isString: {
-      errorMessage: "Street must be a string",
-    },
-  },
-  "address.city": {
-    notEmpty: {
-      errorMessage: "City is required",
-    },
-    isString: {
-      errorMessage: "City must be a string",
-    },
-  },
-  "address.state": {
-    notEmpty: {
-      errorMessage: "State is required",
-    },
-    isString: {
-      errorMessage: "State must be a string",
-    },
-  },
-  "address.country": {
-    notEmpty: {
-      errorMessage: "Country is required",
-    },
-    isString: {
-      errorMessage: "Country must be a string",
-    },
-  },
-  "address.postalCode": {
-    notEmpty: {
-      errorMessage: "Postal code is required",
-    },
-    isPostalCode: {
-      options: "any",
-      errorMessage: "Invalid postal code",
-    },
-  },
   isActive: {
     isBoolean: {
       errorMessage: "Active status must be a boolean",

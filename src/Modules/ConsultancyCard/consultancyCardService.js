@@ -15,6 +15,7 @@ getAll: serviceHandler(async (data) => {
   const { search, userRole,createdBy  } = data; // Extract user role and teacher ID
 
   const query = { isDelete: false };
+  data.populate=[{path:"teacherId"}]
 
   // Apply search filter
   if (search) {
@@ -26,8 +27,8 @@ getAll: serviceHandler(async (data) => {
 
   const res = await model.getAllDocuments(query, data);
 
-   const filteredData = userRole === "TEACHER" 
-    ? res.filter((item) => item.teacherId?._id.toString() === createdBy.toString()) 
+   const filteredData = userRole === "TEACHER"
+    ? res.filter((item) => item.teacherId?._id.toString() === createdBy.toString())
     : res;
   return filteredData;
 }),

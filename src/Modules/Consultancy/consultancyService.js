@@ -1,7 +1,7 @@
 const DatabaseService = require("../../Service/DbService");
 const serviceHandler = require("../../Utils/serviceHandler");
 const Consultancy = require("./ConsultancyModel");
-const ConsultancyCardModel  = require("../ConsultancyCard/consultancyCardModel");
+const ConsultancyCardModel = require("../ConsultancyCard/consultancyCardModel");
 const { v4: uuidv4 } = require("uuid");
 
 const CustomError = require("../../Errors/CustomError");
@@ -14,24 +14,27 @@ const instance = paymentGatewayInstance.getInstance();
 
 const consultancyService = {
   create: serviceHandler(async (data) => {
-    const {  decodedUser, cardId, type, scheduledDate } = data;
+    const { decodedUser, cardId, type, scheduledDate } = data;
     let consultancy, payment;
 
-
-    const studentId  = decodedUser._id
+    const studentId = decodedUser._id;
     try {
-
       // if active consultancy for this card exists, then reject the request
-      const isActive  = await model.getDocument({cardId : cardId, studentId : studentId, isScheduled : true})
+      const isActive = await model.getDocument({
+        cardId: cardId,
+        studentId: studentId,
+        isScheduled: true,
+      });
 
-      if (isActive?.isScheduled) throw new CustomError(400,"Consultancy Is Already Active")
+      if (isActive?.isScheduled)
+        throw new CustomError(400, "Consultancy Is Already Active");
       const consultancyCard = await consultancyCardModel.getDocumentById({
         _id: cardId,
       });
-    const { teacherId, pricing } = consultancyCard;
+      const { teacherId, pricing } = consultancyCard;
 
-    const amount =
-      type.toLowerCase() === "single" ? pricing.single : pricing.project;
+      const amount =
+        type.toLowerCase() === "single" ? pricing.single : pricing.project;
       const options = {
         amount: amount * 100,
         currency: "INR",
@@ -44,7 +47,9 @@ const consultancyService = {
           amount,
           currency: order.currency,
           razorpayOrderId: order.id,
-          transactionType:'hireTeacher',
+          transactionType: "hireTeacher",
+          referenceModel: "ConsultancyCard",
+          referenceId: cardId,
         };
         payment = await paymentService.create(paymentPayload);
 
@@ -66,56 +71,54 @@ const consultancyService = {
     }
   }),
   getConsultancyByTeacherOrAdmin: serviceHandler(async (data) => {
-    console.log(data)
+    console.log(data);
     const { decodedUser, expertId } = data;
     let result;
-    const query = {}
-    data.populate=[{path:'cardId'}, {path:'teacherId'}]
-    if (decodedUser.role === 'admin') {
+    const query = {isScheduled: true};
+    data.populate = [{ path: "cardId" }, { path: "teacherId" }];
+    if (decodedUser.role === "admin") {
       query.teacherId = expertId;
-      result= await model.getAllDocuments(query, data);
+      result = await model.getAllDocuments(query, data);
     } else {
       query.teacherId = decodedUser._id;
-      result= await model.getAllDocuments(query, data);
+      result = await model.getAllDocuments(query, data);
     }
     // grouping data
-function groupBy(array, keyGetter) {
-  var grouped = {};
-  array.forEach(function (item) {
-    var key = keyGetter(item);
-    if (!grouped[key]) {
-      grouped[key] = [];
+    function groupBy(array, keyGetter) {
+      var grouped = {};
+      array.forEach(function (item) {
+        var key = keyGetter(item);
+        if (!grouped[key]) {
+          grouped[key] = [];
+        }
+        grouped[key].push(item);
+      });
+      return grouped;
     }
-    grouped[key].push(item);
-  });
-  return grouped;
-}
 
-var groupedData = groupBy(result, function (item) {
-  return item.cardId._id;
-});
+    var groupedData = groupBy(result, function (item) {
+      return item.cardId._id;
+    });
 
-var groupedEntry = {};
-Object.keys(groupedData).forEach(function (key) {
-  var value = groupedData[key];
+    var groupedEntry = {};
+    Object.keys(groupedData).forEach(function (key) {
+      var value = groupedData[key];
 
-  groupedEntry[key] = {
-    _id: value[0]._id,
-    title: value[0].cardId.title,
-    sales: value.length,
-    price: value.reduce(function (sum, item) {
-      return sum + Number(item.cardId.pricing.single);
-    }, 0),
-    teacherName: value[0].teacherId.name,
-  };
-});
+      groupedEntry[key] = {
+        _id: value[0]._id,
+        title: value[0].cardId.title,
+        sales: value.length,
+        price: value.reduce(function (sum, item) {
+          return sum + Number(item.cardId.pricing.single);
+        }, 0),
+        teacherName: value[0].teacherId.name,
+      };
+    });
 
     console.log(groupedEntry);
-const arr=    Object.keys(groupedData).map(item => groupedEntry[item]);
+    const arr = Object.keys(groupedData).map((item) => groupedEntry[item]);
 
- return arr;
-
-
+    return arr;
   }),
 
   getAll: serviceHandler(async (data) => {
@@ -153,16 +156,32 @@ const arr=    Object.keys(groupedData).map(item => groupedEntry[item]);
 
     if (isSignatureVerified === false) {
       throw new CustomError(400, "Payment Not Verified");
-    } else {
-      const getConsultancy = await model.getDocumentById({
-        _id: consultancyId,
-      });
+    }
+      const consultancy = await model.getAllDocuments(
+        {
+          _id: consultancyId,
+        },
+        { populate: [{ path: "cardId" }] }
+    );
+    const getConsultancy = consultancy[0];
+
+    console.log(getConsultancy, "Consultancy payment verification");
+
+    const vendorPayload = {
+      teacherId: getConsultancy.teacherId,
+      amount: getConsultancy.cardId.pricing.single,
+      razorpay_payment_id,
+      consultancyId,
+    };
+    await paymentService.transferToVendor(vendorPayload);
       const promises = [];
 
       const filter = { _id: consultancyId };
       const updateDocument = {
         isScheduled: true,
         paymentStatus: "paid",
+        referenceModel: "ConsultancyCard",
+        referenceId: getConsultancy._id,
       };
       promises.push(
         model.updateDocument(filter, updateDocument, {
@@ -181,7 +200,7 @@ const arr=    Object.keys(groupedData).map(item => groupedEntry[item]);
       };
       promises.push(paymentService.updatePayment(updatePayment));
       await Promise.all(promises);
-    }
+
   }),
 
   verifyConsultancy: serviceHandler(async (data) => {
@@ -212,7 +231,7 @@ const arr=    Object.keys(groupedData).map(item => groupedEntry[item]);
   }),
 
   endConsultancy: serviceHandler(async (data) => {
-    const { consultancyCardId,  decodedUser } = data;
+    const { consultancyCardId, decodedUser } = data;
 
     const getCard = await consultancyCardModel.getDocumentById({
       _id: consultancyCardId,
@@ -228,7 +247,9 @@ const arr=    Object.keys(groupedData).map(item => groupedEntry[item]);
       status: "inProgress",
     };
 
-    const updatedDocument = await model.updateDocument(query, {status:'completed'});
+    const updatedDocument = await model.updateDocument(query, {
+      status: "completed",
+    });
     return updatedDocument;
   }),
 

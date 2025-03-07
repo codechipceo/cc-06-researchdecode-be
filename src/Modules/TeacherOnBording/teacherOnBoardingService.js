@@ -88,6 +88,11 @@ const teacherOnBordingService = {
       accountNumber: isOnboardTeacher.accountNumber,
       IFSC_Code: isOnboardTeacher.IFSC_Code,
       address: isOnboardTeacher.address,
+      skills: isOnboardTeacher.skills,
+      degree: isOnboardTeacher.degree,
+      language: isOnboardTeacher.language,
+      specialisation: isOnboardTeacher.specialisation,
+      institute: isOnboardTeacher.institute,
     };
 
     const payload = {

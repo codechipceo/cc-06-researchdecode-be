@@ -62,6 +62,21 @@ const teacherSchema = new mongoose.Schema(
     experience: {
       type: String,
     },
+    institute: {
+      type: String,
+    },
+    degree: {
+      type: String,
+    },
+    specialisation: {
+      type: String,
+    },
+    language: {
+      type:String ,
+    },
+    skills: {
+      type: String,
+    },
     isActive: {
       type: Boolean,
       default: false,
