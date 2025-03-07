@@ -18,6 +18,17 @@ const paymentCtrl = {
     });
   }),
 
+  getPaymentHistory: asyncHandler(async (req, res, next) => {
+    const bodyDto = req.body
+    const result = await paymentService.getPaymentHistory(bodyDto);
+    return successResponse({
+      res: res,
+      data: result,
+      msg: "Payment history fetched successfully",
+    });
+
+  })
+
 }
 
 module.exports = paymentCtrl;
