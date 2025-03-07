@@ -54,22 +54,22 @@ const profileSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    accountNumber:{
-      type:Number,
-      required:true
+    accountNumber: {
+      type: Number,
+      required: true,
     },
-    IFSC_Code:{
-      type:String,
-      required:true
+    IFSC_Code: {
+      type: String,
+      required: true,
     },
-   
-    isBankActive:{
-      type:Boolean,
-      default:false
+
+    isBankActive: {
+      type: Boolean,
+      default: false,
     },
-   razorPayID:{
-    type:String,
-   },
+    razorPayID: {
+      type: String,
+    },
     role: {
       type: String,
       enum: ["ADMIN", "TEACHER"],
@@ -78,6 +78,21 @@ const profileSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: false,
+    },
+    institute: {
+      type: String,
+    },
+    degree: {
+      type: String,
+    },
+    specialisation: {
+      type: String,
+    },
+    language: {
+      type: String,
+    },
+    skills: {
+      type: String,
     },
     isDelete: {
       type: Boolean,

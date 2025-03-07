@@ -15,6 +15,7 @@ const studentCtrl = {
       let savedStudent;
 
       if (!errors.isEmpty()) {
+        throw new CustomError(400, "Please fill all fields correctly");
 
       } else {
         const studentData = req.body;
