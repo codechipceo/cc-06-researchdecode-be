@@ -180,8 +180,6 @@ const consultancyService = {
       const updateDocument = {
         isScheduled: true,
         paymentStatus: "paid",
-        referenceModel: "ConsultancyCard",
-        referenceId: getConsultancy._id,
       };
       promises.push(
         model.updateDocument(filter, updateDocument, {
