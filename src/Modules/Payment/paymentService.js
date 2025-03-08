@@ -78,6 +78,7 @@ const paymentService = {
         }
       );
     } catch (error) {
+      console.error(error)
       throw new Error("Transfer to vendor error", error);
     }
   }),
