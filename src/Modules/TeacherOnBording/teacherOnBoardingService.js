@@ -100,7 +100,7 @@ const teacherOnBordingService = {
       email: newTeacherPayload.email,
       phone: newTeacherPayload.phoneNumber,
       type: "route",
-      reference_id: uuidv4(),
+      reference_id: uuidv4().substring(0,18),
       legal_business_name: newTeacherPayload.name,
       business_type: "partnership",
       contact_name: newTeacherPayload.name,
