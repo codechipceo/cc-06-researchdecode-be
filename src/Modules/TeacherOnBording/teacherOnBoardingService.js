@@ -8,6 +8,7 @@ const model = new DbService(TeacherOnbording);
 const profileModel = new DbService(PROFILE);
 const { sendCustomEmail } = require("../../Utils/mailer");
 const callRazorpayApi = require("../../Utils/razorpayHelper.js");
+const  { v4 : uuidv4 } = require('uuid')
 const teacherOnBordingService = {
   submitRequest: serviceHandler(async (data) => {
     const {
@@ -99,13 +100,13 @@ const teacherOnBordingService = {
       email: newTeacherPayload.email,
       phone: newTeacherPayload.phoneNumber,
       type: "route",
-      reference_id: newTeacherPayload.email.substring(0, 20),
+      reference_id: uuidv4(),
       legal_business_name: newTeacherPayload.name,
       business_type: "partnership",
       contact_name: newTeacherPayload.name,
       profile: {
-        category: "healthcare",
-        subcategory: "clinic",
+        category: "education",
+        subcategory: "university",
         addresses: {
           registered: {
             street1: newTeacherPayload.address.city,
@@ -119,6 +120,9 @@ const teacherOnBordingService = {
       },
     };
 
+
+    console.log("Razorpay Payload")
+    console.log(payload)
     try {
       const response = await callRazorpayApi("/v2/accounts", "POST", payload);
 
