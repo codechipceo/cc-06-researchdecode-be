@@ -46,7 +46,7 @@ const paymentSchema = new Schema(
     },
     referenceModel: {
       type: String,
-      enum: ["Course", "Consultancy", "Webinar"], // Collection names
+      enum: ["Course", "ConsultancyCard", "Webinar"], // Collection names
       required: function () {
         return this.transactionType !== "other";
       },
