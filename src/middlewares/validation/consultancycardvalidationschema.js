@@ -12,9 +12,7 @@ const consultancyCardValidationSchema = [
   check("description")
     .optional()
     .isString()
-    .withMessage("Description must be a string")
-    .isLength({ max: 500 })
-    .withMessage("Description cannot exceed 500 characters"),
+    .withMessage("Description must be a string"),
 
   check("pricing.single")
     .optional()

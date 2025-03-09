@@ -247,6 +247,7 @@ const consultancyService = {
 
     const updatedDocument = await model.updateDocument(query, {
       status: "completed",
+      isScheduled: false,
     });
     return updatedDocument;
   }),
