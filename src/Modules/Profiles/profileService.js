@@ -32,7 +32,7 @@ const profileService = {
   }),
   getById: serviceHandler(async (dataId) => {
     const { profileId } = dataId;
-    const query = { isDelete: false, _id: profileId };
+    const query = {  _id: profileId };
     const savedDataById = await model.getDocumentById(query);
     return savedDataById;
   }),

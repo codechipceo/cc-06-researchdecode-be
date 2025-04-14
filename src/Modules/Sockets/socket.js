@@ -8,7 +8,7 @@ const corsOptions = {
 
 const onlineUsers = new Map();
 const conSocket = (server) => {
-  console.log(`Scoekt is running on port ${server.address().port}`)
+  console.log(`Scoekt is running on port ${server.address()?.port}`)
   const io = socketIo(server, {
     cors: corsOptions, // Apply CORS configuration
   });
@@ -39,6 +39,13 @@ const conSocket = (server) => {
       io.to(roomId).emit("message", params);
       await chatService.createChats(params);
     });
+
+    socket.on("markSeen", async (data) => {
+      console.log("Seen event triggered", data)
+      const { messageId } = data
+
+      await chatService.update({chatId : messageId, isSeen:true})
+    })
 
     socket.on("disconnect", () => {
       console.log("disconnected")

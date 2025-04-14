@@ -45,7 +45,7 @@ const generateAdminToken = (adminObj) => {
 
 const verifyToken = (req, res, next) => {
   try {
-    const token = req.header("authToken"); // Extract the token from header
+    const token = req.header("authToken"); 
 
     if (!token) {
       return res.status(401).json({ msg: "Authorization header missing" });

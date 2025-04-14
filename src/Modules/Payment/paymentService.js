@@ -17,14 +17,23 @@ const paymentService = {
   create: serviceHandler(async (data) => {
     console.log("Payment Service: Init Creating payment ");
     try {
-      const { studentId, amount, currency, razorpayOrderId, transactionType, referenceModel, referenceId } =
-        data;
+      const {
+        studentId,
+        amount,
+        currency,
+        razorpayOrderId,
+        transactionType,
+        referenceModel,
+        referenceId,
+      } = data;
 
       const paymentSaved = await model.save({
         studentId: studentId,
         amount,
         currency,
-        transactionType,referenceModel, referenceId,
+        transactionType,
+        referenceModel,
+        referenceId,
         razorpayOrderId,
         transactionId: "",
       });
@@ -42,43 +51,42 @@ const paymentService = {
 
   transferToVendor: serviceHandler(async (data) => {
     try {
-      console.log("Transfer To Vendor INIT");
-      const { teacherId, amount, razorpay_payment_id, consultancyId } = data;
-      const query = { _id: teacherId };
-      const findTeacher = await teacher.getDocument(query);
-      if (!findTeacher) {
-        throw new Error("Teacher not found.");
+      console.log("START: Transfer To Vendor INIT");
+      const { accountId, amount } = data;
+
+      const transferPayload = {
+        amount: amount * 100,
+        currency: "INR",
+        account: accountId,
+        on_hold: false,
+      };
+      try {
+        await razorpayInstance.transfers.create(transferPayload);
+        console.log("END: PAYMENT TRANSFER TO VENDOR")
+
+      } catch (error) {
+        console.log(error)
+
+        throw new Error("Razorpay error")
       }
 
-      const transferAmount = Math.floor(amount * 0.8);
-
-      const payment = await razorpayInstance.payments.fetch(
-        razorpay_payment_id
-      );
-      console.log(payment, "Razorpay payment");
-      if (payment.status !== "captured") {
-        throw new Error("Payment not captured.");
-      }
-      console.log(findTeacher.razorPayID);
-
-      const transferToVendor = await razorpayInstance.payments.transfer(
-        razorpay_payment_id,
-        {
-          transfers: [
-            {
-              account: findTeacher.razorPayID,
-              amount: transferAmount * 100,
-              currency: "INR",
-              notes: {
-                consultancyId,
-                transferType: "vendor",
-              },
-            },
-          ],
-        }
-      );
+      // const transferToVendor = await razorpayInstance.payments.transfer(
+      //   razorpay_payment_id,
+      //   {
+      //     transfers: [
+      //       {
+      //         account: findTeacher.razorPayID,
+      //         amount: transferAmount * 100,
+      //         currency: "INR",
+      //         notes: {
+      //           transferType: "vendor",
+      //         },
+      //       },
+      //     ],
+      //   }
+      // );
     } catch (error) {
-      console.error(error)
+      console.error(error);
       throw new Error("Transfer to vendor error", error);
     }
   }),
@@ -87,10 +95,10 @@ const paymentService = {
     const { decodedUser } = data;
     const query = {
       studentId: decodedUser._id,
-      transactionId :{$ne :""}
+      transactionId: { $ne: "" },
     };
-data.populate = [{ path: "referenceId" }];
-   return await  model.getAllDocuments(query, data)
+    data.populate = [{ path: "referenceId" }];
+    return await model.getAllDocuments(query, data);
   }),
 
   getById: serviceHandler(async (data) => {
