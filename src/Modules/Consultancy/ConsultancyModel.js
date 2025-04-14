@@ -36,6 +36,10 @@ const consultancySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isFinished: {
+      type: Boolean,
+      default: false,
+    }, 
 
     scheduledDate: { type: String },
   },

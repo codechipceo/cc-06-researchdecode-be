@@ -24,6 +24,7 @@ const { paymentRouter } = require("./Payment/paymentRouter");
 const adminRouter = require("express").Router();
 const userRouter = require("express").Router();
 
+const withdrawalRouter = require("./Withdrawal/withdrawalRouter");
 // ADMIN ROUTES
 adminRouter.use("/profile", profileRouter);
 adminRouter.use("/subject", subjectRouter);
@@ -39,6 +40,7 @@ adminRouter.use("/teacheronboarding", teacherOnBoardingRouter);
 adminRouter.use("/webinar",verifyToken, webinarRouter);
 adminRouter.use("/courseEnrollment", courseEnrollmentRouter);
 adminRouter.use("/student", studentRouter)
+adminRouter.use("/withdraw", withdrawalRouter);
 // USER ROUTES
 userRouter.use("/paperRequest", paperRequestRouter);
 userRouter.use("/student", studentRouter);
