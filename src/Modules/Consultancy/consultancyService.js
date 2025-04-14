@@ -3,6 +3,7 @@ const serviceHandler = require("../../Utils/serviceHandler");
 const Consultancy = require("./ConsultancyModel");
 const ConsultancyCardModel = require("../ConsultancyCard/consultancyCardModel");
 const { v4: uuidv4 } = require("uuid");
+const mongoose = require("mongoose");
 
 const CustomError = require("../../Errors/CustomError");
 const paymentService = require("../Payment/paymentService");
@@ -24,6 +25,7 @@ const consultancyService = {
         cardId: cardId,
         studentId: studentId,
         isScheduled: true,
+        isFinished: false,
       });
 
       if (isActive?.isScheduled)
@@ -74,7 +76,7 @@ const consultancyService = {
     console.log(data);
     const { decodedUser, expertId } = data;
     let result;
-    const query = {isScheduled: true};
+    const query = { isScheduled: true, isFinished: true };
     data.populate = [{ path: "cardId" }, { path: "teacherId" }];
     if (decodedUser.role === "admin") {
       query.teacherId = expertId;
@@ -121,6 +123,45 @@ const consultancyService = {
     return arr;
   }),
 
+  myConsultancyEarning: serviceHandler(async (data) => {
+
+    const result = await Consultancy.aggregate([
+      {
+        $match: {
+          teacherId:new mongoose.Types.ObjectId( data.createdBy),
+          status: "completed",
+          paymentId: { $ne: null },
+          isScheduled: true,
+          isFinished: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "payments",
+          localField: "paymentId",
+          foreignField: "_id",
+          as: "payment",
+        },
+      },
+      {
+        $unwind: "$payment",
+      },
+      {
+        $group: {
+          _id: "$teacherId",
+          totalEarning: { $sum: "$payment.amount" },
+          payableAmount: { $sum: { $multiply: ["$payment.amount", 0.8] } },
+        },
+      },
+    ]);
+    console.log("Result", JSON.stringify(result));
+    const earnings ={
+      totalEarning: result?.[0]?.totalEarning,
+      payableAmount: result?.[0]?.payableAmount,
+    }
+    return earnings
+  }),
+
   getAll: serviceHandler(async (data) => {
     data.populate = [
       { path: "teacherId" },
@@ -157,11 +198,11 @@ const consultancyService = {
     if (isSignatureVerified === false) {
       throw new CustomError(400, "Payment Not Verified");
     }
-      const consultancy = await model.getAllDocuments(
-        {
-          _id: consultancyId,
-        },
-        { populate: [{ path: "cardId" }] }
+    const consultancy = await model.getAllDocuments(
+      {
+        _id: consultancyId,
+      },
+      { populate: [{ path: "cardId" }] }
     );
     const getConsultancy = consultancy[0];
 
@@ -173,34 +214,31 @@ const consultancyService = {
       razorpay_payment_id,
       consultancyId,
     };
-    await paymentService.transferToVendor(vendorPayload);
-      const promises = [];
+    // await paymentService.transferToVendor(vendorPayload);
+    const promises = [];
 
-      const filter = { _id: consultancyId };
-      const updateDocument = {
-        isScheduled: true,
-        paymentStatus: "paid",
-        referenceModel: "ConsultancyCard",
-        referenceId: getConsultancy._id,
-      };
-      promises.push(
-        model.updateDocument(filter, updateDocument, {
-          new: true,
-          populate: [
-            { path: "studentId" },
-            { path: "teacherId" },
-            { path: "cardId" },
-          ],
-        })
-      );
-      const updatePayment = {
-        paymentStatus: "Completed",
-        transactionId: razorpay_payment_id,
-        paymentId: getConsultancy?.paymentId,
-      };
-      promises.push(paymentService.updatePayment(updatePayment));
-      await Promise.all(promises);
-
+    const filter = { _id: consultancyId };
+    const updateDocument = {
+      isScheduled: true,
+      paymentStatus: "paid",
+    };
+    promises.push(
+      model.updateDocument(filter, updateDocument, {
+        new: true,
+        populate: [
+          { path: "studentId" },
+          { path: "teacherId" },
+          { path: "cardId" },
+        ],
+      })
+    );
+    const updatePayment = {
+      paymentStatus: "Completed",
+      transactionId: razorpay_payment_id,
+      paymentId: getConsultancy?.paymentId,
+    };
+    promises.push(paymentService.updatePayment(updatePayment));
+    await Promise.all(promises);
   }),
 
   verifyConsultancy: serviceHandler(async (data) => {
@@ -220,6 +258,7 @@ const consultancyService = {
       studentId: decodedUser._id,
       status: "inProgress",
       isScheduled: true,
+      isFinished: false,
     };
 
     isScheduled = await model.getAllDocuments(query);
@@ -249,6 +288,7 @@ const consultancyService = {
 
     const updatedDocument = await model.updateDocument(query, {
       status: "completed",
+      isFinished: true,
     });
     return updatedDocument;
   }),
