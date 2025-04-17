@@ -3,6 +3,8 @@ const consultancyService = require("../Consultancy/consultancyService");
 const { Types } = require("mongoose");
 const paymentService = require("../Payment/paymentService");
 const ProfileModel = require("../Profiles/profileModel");
+const { v4: uuidv4 } = require("uuid");
+
 class WithdrawalService {
   async getWalletAmount(teacherId) {
     try {
@@ -75,14 +77,21 @@ class WithdrawalService {
       });
       const { teacherId, amount } = withdrawalRequest;
       const profile = await ProfileModel.findOne({ _id: teacherId });
-      if (!profile.razorPayID) {
-        throw new Error("Razorpay ID not found for the teacher");
+      // if (!profile.razorPayID) {
+      //   throw new Error("Razorpay ID not found for the teacher");
+      // }
+      if (!profile.contactId || !profile.fundId) {
+        throw new Error("Teacher doesnt have contact or fund Id")
       }
 
-      await paymentService.transferToVendor({
-        accountId: profile.razorPayID,
-        amount: amount,
-      });
+      const transferPayload ={
+        fund_account_id:profile.fundId,
+          amount: amount*100,
+          reference_id:`payout-${uuidv4().slice(0,20)}`,
+      }
+
+
+      await paymentService.transferToVendor(transferPayload);
 
       withdrawalRequest.status = "approved";
       await withdrawalRequest.save();
@@ -97,7 +106,7 @@ class WithdrawalService {
     const query = {
       status: status ?? "process",
     };
-    if (userRole === "teacher") {
+    if (userRole === "TEACHER") {
       query.teacherId = createdBy;
       return WithdrawalModel.find(query);
     } else {
@@ -105,7 +114,10 @@ class WithdrawalService {
     }
   }
 
-  async rejectPayoutRequest(withdrawId) {}
+  async rejectPayoutRequest(withdrawId) {
+    await WithdrawalModel.findOneAndDelete({ _id: withdrawId });
+    return 
+  }
 }
 const withdrawalService = new WithdrawalService();
 

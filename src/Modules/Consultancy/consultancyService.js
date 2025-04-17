@@ -40,7 +40,7 @@ const consultancyService = {
       const options = {
         amount: amount * 100,
         currency: "INR",
-        receipt: `rec-${uuidv4()}`,
+        receipt: `rec-${uuidv4().slice(0,20)}`,
       };
       const order = await instance.orders.create(options);
       if (order.status) {

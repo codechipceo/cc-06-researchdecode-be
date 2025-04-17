@@ -8,9 +8,11 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: process.env.EMAIL,
-    pass: process.env.EMAIL_PASSWORD,
+    user: "info@researchdecode.com",
+    pass: "Web#@mail$%9956",
   },
+  logger: true,
+  debug: true,
 });
 
 const sendVerificationEmail = async (email, token) => {
