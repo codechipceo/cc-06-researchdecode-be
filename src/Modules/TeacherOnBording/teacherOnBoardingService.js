@@ -8,7 +8,8 @@ const model = new DbService(TeacherOnbording);
 const profileModel = new DbService(PROFILE);
 const { sendCustomEmail } = require("../../Utils/mailer");
 const callRazorpayApi = require("../../Utils/razorpayHelper.js");
-const  { v4 : uuidv4 } = require('uuid')
+const { v4: uuidv4 } = require('uuid')
+const paymentGatewayInstance = require("../../Utils/paymentGatewayUtil.js");
 const teacherOnBordingService = {
   submitRequest: serviceHandler(async (data) => {
     const {
@@ -121,15 +122,31 @@ const teacherOnBordingService = {
     };
 
 
-    console.log("Razorpay Payload")
-    console.log(payload)
-    try {
-      const response = await callRazorpayApi("/v2/accounts", "POST", payload);
 
-      console.log("Razorpay account created:", response);
+    try {
+      const contactPayload = {
+        name: newTeacherPayload.name,
+        email: newTeacherPayload.email,
+        contact: newTeacherPayload.phoneNumber
+      };
+      console.log("INIT: Creating Contact Account", contactPayload)
+      const {id} = await paymentGatewayInstance.createContact(contactPayload)
+
+      const fundAccountPayload = {
+        contact_id: id,
+        ifsc: newTeacherPayload.IFSC_Code,
+        account_number: newTeacherPayload.accountNumber,
+        name: isOnboardTeacher.bankName,
+      };
+
+      const fundAcccountRes =await paymentGatewayInstance.createFundAccount(fundAccountPayload);
+      // const response = await callRazorpayApi("/v2/accounts", "POST", payload);
+
+      console.log("Razorpay contact and fund account created:", fundAcccountRes);
 
       // Only save teacher after successful Razorpay account creation
-      newTeacherPayload.razorPayID = response.id;
+      newTeacherPayload.contactId = id;
+      newTeacherPayload.fundId = fundAcccountRes.id;
       const newTeacher = await profileModel.save(newTeacherPayload);
 
       await model.updateDocument(

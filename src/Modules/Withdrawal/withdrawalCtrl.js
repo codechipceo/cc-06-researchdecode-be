@@ -19,6 +19,16 @@ const withdrawalCtrl = {
     });
   }),
 
+  reject: asyncHandler(async (req, res, next) => {
+    const { withdrawId } = req.body
+    const response = await withdrawalService.rejectPayoutRequest(withdrawId)
+    return successResponse({
+      res,
+      msg: "Withdrawal Request Approved",
+      data: response?.data,
+    });
+  }),
+
   requestMoney: asyncHandler(async (req, res, next) => {
     const payoutDto = req.body;
     const response = await withdrawalService.requestPayout(payoutDto);

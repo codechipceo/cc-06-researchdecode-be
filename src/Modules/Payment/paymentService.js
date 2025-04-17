@@ -6,6 +6,7 @@ const model = new DatabaseService(PaymentModel);
 const teacher = new DatabaseService(teacherModel);
 const Razorpay = require("razorpay");
 
+
 const paymentGatewayInstance = require("../../Utils/paymentGatewayUtil");
 
 const razorpayInstance = new Razorpay({
@@ -52,16 +53,9 @@ const paymentService = {
   transferToVendor: serviceHandler(async (data) => {
     try {
       console.log("START: Transfer To Vendor INIT");
-      const { accountId, amount } = data;
-
-      const transferPayload = {
-        amount: amount * 100,
-        currency: "INR",
-        account: accountId,
-        on_hold: false,
-      };
       try {
-        await razorpayInstance.transfers.create(transferPayload);
+        // await razorpayInstance.transfers.create(transferPayload);
+        paymentGatewayInstance.payoutToVendor(data);
         console.log("END: PAYMENT TRANSFER TO VENDOR")
 
       } catch (error) {
