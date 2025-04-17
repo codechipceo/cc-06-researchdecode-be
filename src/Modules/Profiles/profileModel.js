@@ -70,6 +70,12 @@ const profileSchema = new mongoose.Schema(
     razorPayID: {
       type: String,
     },
+    contactId: {
+      type: String,
+    },
+    fundId: {
+      type: String,
+    },
     role: {
       type: String,
       enum: ["ADMIN", "TEACHER"],
